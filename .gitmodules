@@ -4,3 +4,6 @@
 [submodule "lib/msdfgen"]
 	path = lib/msdfgen
 	url = https://github.com/Chlumsky/msdfgen
+[submodule "lib/gamenetworkingsockets"]
+	path = lib/gamenetworkingsockets
+	url = https://github.com/ValveSoftware/GameNetworkingSockets.git
