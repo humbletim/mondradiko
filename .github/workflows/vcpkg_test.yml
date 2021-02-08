@@ -1,0 +1,76 @@
+name: vcpkg test
+
+on: [pull_request]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-16.04
+    env:
+      CC: clang-8
+      CXX: clang++-8
+      VK_VERSION: 1.2.162.1
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+          architecture: x64
+      - name: Get software versions please
+        run: |
+          cmake --version
+          git --version
+          python --version
+          $CXX --version
+      - name: apt
+        run: |
+          pip3 install toml
+          sudo apt install \
+                   cmake ninja-build build-essential \
+                   libzstd-dev libfreetype6-dev \
+                   libprotobuf-dev protobuf-compiler libssl-dev \
+                   libgl1-mesa-dev libx11-xcb-dev libxcb-dri2-0-dev \
+                   libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev \
+                   libxcb-randr0-dev libxrandr-dev libxxf86vm-dev \
+                   mesa-common-dev
+      - name: setup environment vars
+        run: |
+             export VULKAN_SDK=$PWD/$VK_VERSION/x86_64
+             echo "VULKAN_SDK=$VULKAN_SDK" >> $GITHUB_ENV
+             mkdir builddir
+      - name: cache -- VULKAN_SDK
+        id: cachedvulkan
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.VULKAN_SDK }}
+          key: ${{ github.head_ref }}-vulkan
+      - name: cache -- dot vcpkg
+        uses: actions/cache@v2
+        with:
+          path: /home/runner/.vcpkg
+          key: ${{ github.head_ref }}-dotvcpkg
+      - name: cache -- builddir/vcpkg
+        uses: actions/cache@v2
+        with:
+          path: builddir/vcpkg
+          key: ${{ github.head_ref }}-builddir-vcpkg
+      - name: Download Vulkan SDK.
+        if: steps.cachedvulkan.outputs.cache-hit != 'true'
+        run: |
+             wget -q -O vulkansdk-linux-x86_64-$VK_VERSION.tar.gz https://sdk.lunarg.com/sdk/download/$VK_VERSION/linux/vulkansdk-linux-x86_64-$VK_VERSION.tar.gz
+             tar zxf vulkansdk-linux-x86_64-$VK_VERSION.tar.gz
+             export VULKAN_SDK=$PWD/$VK_VERSION/x86_64
+             echo "VULKAN_SDK=$VULKAN_SDK" >> $GITHUB_ENV
+             ls
+      - name: Build
+        run: |
+          pushd builddir
+          cmake -GNinja -DVCPKG_ROOT=$PWD/vcpkg ..
+          ninja
+          popd
