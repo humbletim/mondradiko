@@ -22,7 +22,7 @@ SdlDisplay::SdlDisplay() {
       600, SDL_WINDOW_SHOWN | SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
 
   if (!window) {
-    log_ftl("Failed to create SDL window.");
+    log_ftl("Failed to create SDL window. %s", SDL_GetError());
   }
 
   key_state = SDL_GetKeyboardState(nullptr);
