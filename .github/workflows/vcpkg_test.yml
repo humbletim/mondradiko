@@ -10,8 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-16.04
     env:
-      CC: clang-8
-      CXX: clang++-8
+      CC: gcc-9
+      CXX: g++-9
       VK_VERSION: 1.2.162.1
     steps:
       - uses: actions/checkout@v2
@@ -71,6 +71,6 @@ jobs:
       - name: Build
         run: |
           pushd builddir
-          cmake -DCMAKE_CXX_FLAGS="-Wno-nullability-completeness" -GNinja -DVCPKG_ROOT=$PWD/vcpkg ..
+          cmake -GNinja -DVCPKG_ROOT=$PWD/vcpkg ..
           ninja
           popd
