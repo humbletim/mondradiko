@@ -71,6 +71,6 @@ jobs:
       - name: Build
         run: |
           pushd builddir
-          cmake -GNinja -DVCPKG_ROOT=$PWD/vcpkg ..
+          cmake -DCMAKE_CXX_FLAGS="-Wno-nullability-completeness" -GNinja -DVCPKG_ROOT=$PWD/vcpkg ..
           ninja
           popd
