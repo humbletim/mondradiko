@@ -13,7 +13,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 if(DEFINED VCPKG_ROOT)
   include(vcpkg)
-  vcpkg_install(glslang flatbuffers openxr-loader sdl2 xxhash lz4 vulkan gamenetworkingsockets glm)
+  vcpkg_install(glslang flatbuffers openxr-loader sdl2[vulkan] xxhash lz4 gamenetworkingsockets glm)
 endif()
 
 include(api_bindings)
