@@ -49,7 +49,7 @@ jobs:
       - name: Download Vulkan SDK.
         if: steps.cachedvulkan.outputs.cache-hit != 'true'
         shell: powershell
-        run: wget -O VulkanSDK-${{env.VK_VERSION}}-Installer.exe https://sdk.lunarg.com/sdk/download/${{env.VK_VERSION}}/windows/VulkanSDK-${{env.VK_VERSION}}-Installer.exe?Human=true
+        run: Invoke-WebRequest -Uri https://sdk.lunarg.com/sdk/download/${{env.VK_VERSION}}/windows/VulkanSDK-${{env.VK_VERSION}}-Installer.exe?Human=true -OutFile VulkanSDK-${{env.VK_VERSION}}-Installer.exe
       - name: Extract and prune Vulkan SDK
         if: steps.cachedvulkan.outputs.cache-hit != 'true'
         run: |
