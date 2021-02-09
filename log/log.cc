@@ -22,17 +22,17 @@ std::string formatPath(const std::filesystem::path& file_path) {
 const char* getLogPrefix(LogLevel level) {
   switch (level) {
     case LOG_LEVEL_ZONE:
-      return "\e[33m[ZNE ";
+      return "\x1b[33m[ZNE ";
     case LOG_LEVEL_INFO:
-      return "\e[36m[INF ";
+      return "\x1b[36m[INF ";
     case LOG_LEVEL_DEBUG:
-      return "\e[32m[DBG ";
+      return "\x1b[32m[DBG ";
     case LOG_LEVEL_WARNING:
-      return "\e[33m[WRN ";
+      return "\x1b[33m[WRN ";
     case LOG_LEVEL_ERROR:
-      return "\e[33m[ERR ";
+      return "\x1b[33m[ERR ";
     default:
-      return "\e[31m[FTL ";
+      return "\x1b[31m[FTL ";
   }
 }
 
@@ -42,7 +42,7 @@ void log(const char* file_path, int line, LogLevel level, const char* message) {
   header << prefix << formatPath(file_path) << ":" << line << "]";
 
   std::cerr << std::left << std::setw(55) << header.str();
-  std::cerr << message << "\e[0m" << std::endl;
+  std::cerr << message << "\x1b[0m" << std::endl;
 
   if (level == LOG_LEVEL_FATAL) {
     throw std::runtime_error(message);
