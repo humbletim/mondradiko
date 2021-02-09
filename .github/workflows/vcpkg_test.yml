@@ -21,6 +21,7 @@ jobs:
         with:
           python-version: 3.6
           architecture: x64
+      - uses: seanmiddleditch/gha-setup-vsdevenv@master
       - name: Get software versions please
         run: |
           cmake --version
