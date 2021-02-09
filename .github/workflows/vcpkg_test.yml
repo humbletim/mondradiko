@@ -8,6 +8,7 @@ defaults:
 
 jobs:
   build:
+    environment: test
     runs-on: windows-latest
     env:
       VK_VERSION: 1.2.162.1
@@ -49,11 +50,13 @@ jobs:
       - name: Download Vulkan SDK.
         if: steps.cachedvulkan.outputs.cache-hit != 'true'
         shell: powershell
-        run: Invoke-WebRequest -Uri https://sdk.lunarg.com/sdk/download/${{env.VK_VERSION}}/windows/VulkanSDK-${{env.VK_VERSION}}-Installer.exe?Human=true -OutFile VulkanSDK-${{env.VK_VERSION}}-Installer.exe
-      - name: Extract and prune Vulkan SDK
+        run: Invoke-WebRequest -Uri ${{secrets.VULKAN_SDK_MIRROR}}/VulkanSDK-${{env.VK_VERSION}}-Installer.exe?Human=true -OutFile VulkanSDK-${{env.VK_VERSION}}-Installer.exe
+      - name: Verify, extract and prune Vulkan SDK
         if: steps.cachedvulkan.outputs.cache-hit != 'true'
         run: |
-          7z x -aoa ./VulkanSDK-${{env.VK_VERSION}}-Installer.exe -o $VULKAN_SDK
+          echo "bbeb8a97e3dabf928805bfd8ef30423fe2bc870016f2da4e17321c15c2ea2c8817ac0b98f5e7ac89a284cf3173cae43539a4aa426f0fa89b3a347d75c2e309e0 *VulkanSDK-${{env.VK_VERSION}}-Installer.exe" | \
+            sha512sum --check
+          7z x -aoa ./VulkanSDK-${{env.VK_VERSION}}-Installer.exe -o$VULKAN_SDK
           du -hs $VULKAN_SDK
           rm -rf $VULKAN_SDK/{Samples,Third-Party,Tools,Tools32,Bin32,Lib32}
           du -hs $VULKAN_SDK
