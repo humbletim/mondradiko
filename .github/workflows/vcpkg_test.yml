@@ -13,6 +13,8 @@ jobs:
     env:
       VK_VERSION: 1.2.162.1
       PreferredToolArchitecture: x64
+      CXX: cl.exe
+      CC: cl.exe
     steps:
       - uses: actions/checkout@v2
         with:
@@ -38,19 +40,23 @@ jobs:
              mkdir builddir
       - name: cache -- VULKAN_SDK
         id: cachedvulkan
-        uses: actions/cache@v2
+        #uses: actions/cache@v2
+        uses: pat-s/always-upload-cache@v2.1.3
         with:
           path: ${{ env.VULKAN_SDK }}
-          key: ${{ env.VULKAN_SDK }}-windows-vulcansdk
+          key: 20210209-${{ env.VULKAN_SDK }}-windows-vulcansdk
       - name: cache -- builddir/vcpkg
-        uses: actions/cache@v2
+        uses: pat-s/always-upload-cache@v2.1.3
+        #uses: actions/cache@v2
         with:
           path: builddir/vcpkg
-          key: ${{ github.head_ref }}-windows-builddir-vcpkg
+          key: 20210209-${{ github.head_ref }}-windows-builddir-vcpkg
       - name: Download Vulkan SDK.
         if: steps.cachedvulkan.outputs.cache-hit != 'true'
         shell: powershell
-        run: Invoke-WebRequest -Uri ${{secrets.VULKAN_SDK_MIRROR}}/VulkanSDK-${{env.VK_VERSION}}-Installer.exe?Human=true -OutFile VulkanSDK-${{env.VK_VERSION}}-Installer.exe
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          Invoke-WebRequest -Uri ${{secrets.VULKAN_SDK_MIRROR}}/VulkanSDK-${{env.VK_VERSION}}-Installer.exe?Human=true -OutFile VulkanSDK-${{env.VK_VERSION}}-Installer.exe
       - name: Verify, extract and prune Vulkan SDK
         if: steps.cachedvulkan.outputs.cache-hit != 'true'
         run: |
