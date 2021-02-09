@@ -3,6 +3,11 @@
 
 set(VCPKG_SUBDIR ${CMAKE_CURRENT_LIST_DIR}) # assumes vcpkg-overlays/ and vcpkg-ports/ live next to this .cmake file
 
+if(VCPKG_ROOT AND NOT IS_ABSOLUTE ${VCPKG_ROOT})
+    set(VCPKG_ROOT "${CMAKE_CURRENT_BINARY_DIR}/${VCPKG_ROOT}")
+    message(STATUS "VCPKG_ROOT=${VCPKG_ROOT}")
+endif()
+
 macro(vcpkg_install)
   if (WIN32)
     set(ENV{VCPKG_DEFAULT_TRIPLET} "x64-windows")
