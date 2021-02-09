@@ -1,7 +1,9 @@
 # Copyright (c) 2020-2021 the Mondradiko contributors.
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
-find_package(PkgConfig REQUIRED)
+if (NOT WIN32)
+  find_package(PkgConfig REQUIRED)
+endif()
 if (DEFINED VCPKG_ROOT)
   find_package(Flatbuffers CONFIG REQUIRED)
   find_package(glm CONFIG REQUIRED)
@@ -9,6 +11,7 @@ if (DEFINED VCPKG_ROOT)
   find_package(OpenXR CONFIG REQUIRED)
   find_package(SDL2 CONFIG REQUIRED)
   find_package(xxHash CONFIG REQUIRED)
+  find_package(wasmtime CONFIG REQUIRED)
 else()
   pkg_check_modules(SDL2 REQUIRED sdl2)
   pkg_check_modules(OPENXR REQUIRED openxr)
@@ -47,7 +50,9 @@ if(${TRACY_ENABLE})
 endif()
 
 # Add C++ std::filesystem
-target_link_libraries(mondradiko-lib PUBLIC stdc++fs)
+if (NOT MSVC)
+   target_link_libraries(mondradiko-lib PUBLIC stdc++fs)
+endif()
 
 if (NOT DEFINED VCPKG_ROOT)
   target_link_libraries(mondradiko-lib PUBLIC ${SDL2_LIBRARIES})
@@ -78,28 +83,4 @@ add_subdirectory(msdfgen)
 target_link_libraries(mondradiko-lib PUBLIC msdfgen::msdfgen)
 target_link_libraries(mondradiko-lib PUBLIC msdfgen::msdfgen-ext)
 
-# Add Wasmtime
-# TODO(marceline-cramer) Download the appropriate package per-OS and architecture
-# TODO(marceline-cramer) Move this to its own module
-# TODO(marceline-cramer) Make this a target, so that it automatically redownloads
-set(WASMTIME_C_API_PATH "${CMAKE_CURRENT_BINARY_DIR}/wasmtime-v0.21.0-x86_64-linux-c-api/")
-set(WASMTIME_C_API_LIB "${WASMTIME_C_API_PATH}/lib/")
-target_include_directories(mondradiko-lib PUBLIC "${WASMTIME_C_API_PATH}/include/")
-
-find_library(WASMTIME wasmtime PATHS "${WASMTIME_C_API_LIB}")
-if(NOT WASMTIME)
-  message(STATUS "libwasmtime not found; automatically downloading it.")
-
-  set(WASMTIME_C_API_URL https://github.com/bytecodealliance/wasmtime/releases/download/v0.21.0/wasmtime-v0.21.0-x86_64-linux-c-api.tar.xz)
-  set(WASMTIME_C_API_FILE "${CMAKE_CURRENT_BINARY_DIR}/wasmtime-v0.21.0-x86_64-linux-c-api.tar.xz")
-
-  file(DOWNLOAD ${WASMTIME_C_API_URL} ${WASMTIME_C_API_FILE})
-  file(ARCHIVE_EXTRACT INPUT ${WASMTIME_C_API_FILE})
-
-  find_library(WASMTIME wasmtime PATHS "${WASMTIME_C_API_LIB}")
-  if(NOT WASMTIME)
-    message(FATAL_ERROR "Failed to automatically download and link libwasmtime")
-  endif()
-endif()
-
-target_link_libraries(mondradiko-lib PUBLIC ${WASMTIME})
+target_link_libraries(mondradiko-lib PUBLIC wasmtime::wasmtime)

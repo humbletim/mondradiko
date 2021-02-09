@@ -26,6 +26,8 @@
 #include "shaders/mesh.frag.h"
 #include "shaders/mesh.vert.h"
 
+#include "c++20-polyfills.h"
+
 namespace mondradiko {
 
 void MeshPass::initCVars(CVarScope* cvars) {}
@@ -37,22 +39,22 @@ MeshPass::MeshPass(Renderer* renderer, World* world)
   {
     log_zone_named("Create texture sampler");
 
-    VkSamplerCreateInfo sampler_info{
-        .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-        .magFilter = VK_FILTER_LINEAR,
-        .minFilter = VK_FILTER_LINEAR,
-        .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
-        .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-        .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-        .addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-        .mipLodBias = 0.0f,
+    auto sampler_info = with(VkSamplerCreateInfo, 
+        $.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+        $.magFilter = VK_FILTER_LINEAR,
+        $.minFilter = VK_FILTER_LINEAR,
+        $.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
+        $.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+        $.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+        $.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+        $.mipLodBias = 0.0f,
         // TODO(marceline-cramer) Anisotropy support
-        .anisotropyEnable = VK_FALSE,
-        .compareEnable = VK_FALSE,
-        .minLod = 0.0f,
-        .maxLod = 0.0f,
-        .borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
-        .unnormalizedCoordinates = VK_FALSE};
+        $.anisotropyEnable = VK_FALSE,
+        $.compareEnable = VK_FALSE,
+        $.minLod = 0.0f,
+        $.maxLod = 0.0f,
+        $.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+        $.unnormalizedCoordinates = VK_FALSE);
 
     if (vkCreateSampler(gpu->device, &sampler_info, nullptr,
                         &texture_sampler) != VK_SUCCESS) {
@@ -82,10 +84,10 @@ MeshPass::MeshPass(Renderer* renderer, World* world)
         material_layout->getSetLayout(), texture_layout->getSetLayout(),
         mesh_layout->getSetLayout()};
 
-    VkPipelineLayoutCreateInfo layoutInfo{
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        .setLayoutCount = static_cast<uint32_t>(set_layouts.size()),
-        .pSetLayouts = set_layouts.data()};
+    auto layoutInfo = with(VkPipelineLayoutCreateInfo, 
+        $.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+        $.setLayoutCount = static_cast<uint32_t>(set_layouts.size()),
+        $.pSetLayouts = set_layouts.data());
 
     if (vkCreatePipelineLayout(gpu->device, &layoutInfo, nullptr,
                                &pipeline_layout) != VK_SUCCESS) {
@@ -266,17 +268,17 @@ void MeshPass::render(uint32_t frame_index, VkCommandBuffer command_buffer,
   {
     GraphicsState graphics_state;
 
-    graphics_state.input_assembly_state = {
-        .primitive_topology = GraphicsState::PrimitiveTopology::TriangleList,
-        .primitive_restart_enable = GraphicsState::BoolFlag::False};
+    graphics_state.input_assembly_state = with(GraphicsState::InputAssemblyState,
+        $.primitive_topology = GraphicsState::PrimitiveTopology::TriangleList,
+        $.primitive_restart_enable = GraphicsState::BoolFlag::False);
 
-    graphics_state.rasterization_state = {
-        .polygon_mode = GraphicsState::PolygonMode::Fill,
-        .cull_mode = GraphicsState::CullMode::Back};
+    graphics_state.rasterization_state = with(GraphicsState::RasterizatonState,
+        $.polygon_mode = GraphicsState::PolygonMode::Fill,
+        $.cull_mode = GraphicsState::CullMode::Back);
 
-    graphics_state.depth_state = {.test_enable = GraphicsState::BoolFlag::True,
-                                  .write_enable = GraphicsState::BoolFlag::True,
-                                  .compare_op = GraphicsState::CompareOp::Less};
+    graphics_state.depth_state = with(GraphicsState::DepthState, $.test_enable = GraphicsState::BoolFlag::True,
+                                  $.write_enable = GraphicsState::BoolFlag::True,
+                                  $.compare_op = GraphicsState::CompareOp::Less);
 
     pipeline->cmdBind(command_buffer, graphics_state);
   }

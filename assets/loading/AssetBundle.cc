@@ -9,6 +9,8 @@
 #include "types/assets/Registry_generated.h"
 #include "log/log.h"
 
+#include "c++20-polyfills.h"
+
 namespace mondradiko {
 namespace assets {
 
@@ -90,7 +92,7 @@ AssetResult AssetBundle::loadRegistry(const char* registry_name) {
     log_zone_named("Load lumps");
 
     uint32_t lump_count = registry->lumps()->size();
-    lump_cache.resize(lump_count, {.lump = nullptr});
+    lump_cache.resize(lump_count, with(LumpCacheEntry, $.lump = nullptr));
 
     for (uint32_t lump_index = 0; lump_index < lump_count; lump_index++) {
       const LumpEntry* lump_entry = registry->lumps()->Get(lump_index);
@@ -114,9 +116,9 @@ AssetResult AssetBundle::loadRegistry(const char* registry_name) {
           return AssetResult::DuplicateAsset;
         }
 
-        AssetLookupEntry lookup_entry{.lump_index = lump_index,
-                                      .offset = asset_offset,
-                                      .size = asset_entry->size()};
+        auto lookup_entry = with(AssetLookupEntry, $.lump_index = lump_index,
+                                      $.offset = asset_offset,
+                                      $.size = asset_entry->size());
 
         asset_lookup.emplace(asset_entry->id(), lookup_entry);
 

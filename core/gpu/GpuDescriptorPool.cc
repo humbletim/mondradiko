@@ -10,28 +10,30 @@
 #include "core/gpu/GpuInstance.h"
 #include "log/log.h"
 
+#include "c++20-polyfills.h"
+
 namespace mondradiko {
 
 GpuDescriptorPool::GpuDescriptorPool(GpuInstance* gpu) : gpu(gpu) {
   // TODO(marceline-cramer) Dynamic pool recreation using set layouts
   std::vector<VkDescriptorPoolSize> pool_sizes;
 
-  pool_sizes.push_back({.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                        .descriptorCount = 1000});
+  pool_sizes.push_back(with(VkDescriptorPoolSize, $.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                        $.descriptorCount = 1000));
 
-  pool_sizes.push_back(
-      {.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, .descriptorCount = 1000});
-  pool_sizes.push_back(
-      {.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, .descriptorCount = 1000});
+  pool_sizes.push_back(with(VkDescriptorPoolSize, 
+      $.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, $.descriptorCount = 1000));
+  pool_sizes.push_back(with(VkDescriptorPoolSize, 
+      $.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, $.descriptorCount = 1000));
 
-  pool_sizes.push_back({.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
-                        .descriptorCount = 1000});
+  pool_sizes.push_back(with(VkDescriptorPoolSize, $.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
+                        $.descriptorCount = 1000));
 
-  VkDescriptorPoolCreateInfo createInfo{
-      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
-      .maxSets = 1000,
-      .poolSizeCount = static_cast<uint32_t>(pool_sizes.size()),
-      .pPoolSizes = pool_sizes.data()};
+  auto createInfo = with(VkDescriptorPoolCreateInfo,
+      $.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+      $.maxSets = 1000,
+      $.poolSizeCount = static_cast<uint32_t>(pool_sizes.size()),
+      $.pPoolSizes = pool_sizes.data());
 
   if (vkCreateDescriptorPool(gpu->device, &createInfo, nullptr,
                              &descriptor_pool) != VK_SUCCESS) {
@@ -51,11 +53,11 @@ GpuDescriptorSet* GpuDescriptorPool::allocate(GpuDescriptorSetLayout* layout) {
   VkDescriptorSetLayout vk_set_layout = layout->getSetLayout();
   VkDescriptorSet vk_set;
 
-  VkDescriptorSetAllocateInfo alloc_info{
-      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-      .descriptorPool = descriptor_pool,
-      .descriptorSetCount = 1,
-      .pSetLayouts = &vk_set_layout};
+  auto alloc_info = with(VkDescriptorSetAllocateInfo,
+      $.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+      $.descriptorPool = descriptor_pool,
+      $.descriptorSetCount = 1,
+      $.pSetLayouts = &vk_set_layout);
 
   if (vkAllocateDescriptorSets(gpu->device, &alloc_info, &vk_set) !=
       VK_SUCCESS) {

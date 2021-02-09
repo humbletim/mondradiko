@@ -13,6 +13,8 @@
 #include "lib/include/glm_headers.h"
 #include "lib/include/msdfgen_headers.h"
 
+#include "c++20-polyfills.h"
+
 namespace mondradiko {
 
 // Forward declarations
@@ -33,9 +35,9 @@ struct GlyphInstance {
   static GpuPipeline::VertexBindings getVertexBindings() {
     GpuPipeline::VertexBindings bindings(1);
 
-    bindings[0] = {.binding = 0,
-                   .stride = sizeof(GlyphInstance),
-                   .inputRate = VK_VERTEX_INPUT_RATE_INSTANCE};
+    bindings[0] = with(GpuPipeline::VertexBindings::value_type, $.binding = 0,
+                   $.stride = sizeof(GlyphInstance),
+                   $.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE);
 
     return bindings;
   }
@@ -43,15 +45,15 @@ struct GlyphInstance {
   static GpuPipeline::AttributeDescriptions getAttributeDescriptions() {
     GpuPipeline::AttributeDescriptions descriptions(2);
 
-    descriptions[0] = {.location = 0,
-                       .binding = 0,
-                       .format = VK_FORMAT_R32G32_SFLOAT,
-                       .offset = offsetof(GlyphInstance, position)};
+    descriptions[0] = with(GpuPipeline::AttributeDescriptions::value_type, $.location = 0,
+                       $.binding = 0,
+                       $.format = VK_FORMAT_R32G32_SFLOAT,
+                       $.offset = offsetof(GlyphInstance, position));
 
-    descriptions[1] = {.location = 1,
-                       .binding = 0,
-                       .format = VK_FORMAT_R32_UINT,
-                       .offset = offsetof(GlyphInstance, glyph_index)};
+    descriptions[1] = with(GpuPipeline::AttributeDescriptions::value_type, $.location = 1,
+                       $.binding = 0,
+                       $.format = VK_FORMAT_R32_UINT,
+                       $.offset = offsetof(GlyphInstance, glyph_index));
 
     return descriptions;
   }

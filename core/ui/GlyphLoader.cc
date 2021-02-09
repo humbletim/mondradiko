@@ -18,6 +18,8 @@
 #include "shaders/glyph.frag.h"
 #include "shaders/glyph.vert.h"
 
+#include "c++20-polyfills.h"
+
 namespace mondradiko {
 
 void GlyphLoader::initCVars(CVarScope* cvars) {
@@ -189,22 +191,22 @@ GlyphLoader::GlyphLoader(const CVarScope* _cvars, GpuInstance* gpu)
   {
     log_zone_named("Create SDF sampler");
 
-    VkSamplerCreateInfo sampler_info{
-        .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-        .magFilter = VK_FILTER_LINEAR,
-        .minFilter = VK_FILTER_LINEAR,
-        .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
-        .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-        .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-        .addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-        .mipLodBias = 0.0f,
+    auto sampler_info = with(VkSamplerCreateInfo, 
+        $.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+        $.magFilter = VK_FILTER_LINEAR,
+        $.minFilter = VK_FILTER_LINEAR,
+        $.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
+        $.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+        $.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+        $.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+        $.mipLodBias = 0.0f,
         // TODO(marceline-cramer) Anisotropy support
-        .anisotropyEnable = VK_FALSE,
-        .compareEnable = VK_FALSE,
-        .minLod = 0.0f,
-        .maxLod = 0.0f,
-        .borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
-        .unnormalizedCoordinates = VK_FALSE};
+        $.anisotropyEnable = VK_FALSE,
+        $.compareEnable = VK_FALSE,
+        $.minLod = 0.0f,
+        $.maxLod = 0.0f,
+        $.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+        $.unnormalizedCoordinates = VK_FALSE);
 
     if (vkCreateSampler(gpu->device, &sampler_info, nullptr, &sdf_sampler) !=
         VK_SUCCESS) {

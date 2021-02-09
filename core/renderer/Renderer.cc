@@ -15,6 +15,8 @@
 #include "core/renderer/RenderPass.h"
 #include "log/log.h"
 
+#include "c++20-polyfills.h"
+
 namespace mondradiko {
 
 void Renderer::initCVars(CVarScope* cvars) {
@@ -31,55 +33,55 @@ Renderer::Renderer(const CVarScope* cvars, DisplayInterface* display,
   {
     log_zone_named("Create render pass");
 
-    VkAttachmentDescription swapchain_attachment_description{
-        .format = display->getSwapchainFormat(),
-        .samples = VK_SAMPLE_COUNT_1_BIT,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .finalLayout = display->getFinalLayout()};
+    auto swapchain_attachment_description = with(VkAttachmentDescription, 
+        $.format = display->getSwapchainFormat(),
+        $.samples = VK_SAMPLE_COUNT_1_BIT,
+        $.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        $.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+        $.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        $.finalLayout = display->getFinalLayout());
 
-    VkAttachmentDescription depth_attachment_description{
-        .format = display->getDepthFormat(),
-        .samples = VK_SAMPLE_COUNT_1_BIT,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
+    auto depth_attachment_description = with(VkAttachmentDescription, 
+        $.format = display->getDepthFormat(),
+        $.samples = VK_SAMPLE_COUNT_1_BIT,
+        $.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        $.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        $.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        $.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
-    VkAttachmentReference swapchain_attachment_reference{
-        .attachment = 0, .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
+    auto swapchain_attachment_reference = with(VkAttachmentReference, 
+        $.attachment = 0, $.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
-    VkAttachmentReference depth_attachment_reference{
-        .attachment = 1,
-        .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
+    auto depth_attachment_reference = with(VkAttachmentReference, 
+        $.attachment = 1,
+        $.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
     std::vector<VkAttachmentDescription> attachments = {
         swapchain_attachment_description, depth_attachment_description};
 
-    VkSubpassDescription composite_subpass_description{
-        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-        .colorAttachmentCount = 1,
-        .pColorAttachments = &swapchain_attachment_reference,
-        .pDepthStencilAttachment = &depth_attachment_reference};
+    auto composite_subpass_description = with(VkSubpassDescription, 
+        $.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+        $.colorAttachmentCount = 1,
+        $.pColorAttachments = &swapchain_attachment_reference,
+        $.pDepthStencilAttachment = &depth_attachment_reference);
 
-    VkSubpassDependency swapchain_dependency = {
-        .srcSubpass = VK_SUBPASS_EXTERNAL,
-        .dstSubpass = 0,
-        .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .srcAccessMask = 0,
-        .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-        .dependencyFlags = 0};
+    auto swapchain_dependency = with(VkSubpassDependency,
+        $.srcSubpass = VK_SUBPASS_EXTERNAL,
+        $.dstSubpass = 0,
+        $.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        $.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        $.srcAccessMask = 0,
+        $.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+        $.dependencyFlags = 0);
 
-    VkRenderPassCreateInfo compositePassCreateInfo{
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-        .attachmentCount = (uint32_t)attachments.size(),
-        .pAttachments = attachments.data(),
-        .subpassCount = 1,
-        .pSubpasses = &composite_subpass_description,
-        .dependencyCount = 1,
-        .pDependencies = &swapchain_dependency};
+    auto compositePassCreateInfo = with(VkRenderPassCreateInfo, 
+        $.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+        $.attachmentCount = (uint32_t)attachments.size(),
+        $.pAttachments = attachments.data(),
+        $.subpassCount = 1,
+        $.pSubpasses = &composite_subpass_description,
+        $.dependencyCount = 1,
+        $.pDependencies = &swapchain_dependency);
 
     if (vkCreateRenderPass(gpu->device, &compositePassCreateInfo, nullptr,
                            &composite_pass) != VK_SUCCESS) {
@@ -102,27 +104,27 @@ Renderer::Renderer(const CVarScope* cvars, DisplayInterface* display,
     current_frame = 0;
 
     for (auto& frame : frames_in_flight) {
-      VkCommandBufferAllocateInfo alloc_info{
-          .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-          .commandPool = gpu->command_pool,
-          .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-          .commandBufferCount = 1};
+      auto alloc_info = with(VkCommandBufferAllocateInfo, 
+          $.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+          $.commandPool = gpu->command_pool,
+          $.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+          $.commandBufferCount = 1);
 
       if (vkAllocateCommandBuffers(gpu->device, &alloc_info,
                                    &frame.command_buffer) != VK_SUCCESS) {
         log_ftl("Failed to allocate frame command buffers.");
       }
 
-      VkSemaphoreCreateInfo semaphore_info{
-          .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
+      auto semaphore_info = with(VkSemaphoreCreateInfo, 
+          $.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
 
       if (vkCreateSemaphore(gpu->device, &semaphore_info, nullptr,
                             &frame.on_render_finished) != VK_SUCCESS) {
         log_ftl("Failed to create frame render finished semaphore.");
       }
 
-      VkFenceCreateInfo fenceInfo{.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-                                  .flags = VK_FENCE_CREATE_SIGNALED_BIT};
+      auto fenceInfo = with(VkFenceCreateInfo, $.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+                                  $.flags = VK_FENCE_CREATE_SIGNALED_BIT);
 
       if (vkCreateFence(gpu->device, &fenceInfo, nullptr, &frame.is_in_use) !=
           VK_SUCCESS) {
@@ -238,9 +240,9 @@ void Renderer::renderFrame() {
   {
     log_zone_named("Begin command buffers");
 
-    VkCommandBufferBeginInfo beginInfo{
-        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-        .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT};
+    auto beginInfo = with(VkCommandBufferBeginInfo, 
+        $.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+        $.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
     vkBeginCommandBuffer(frame.command_buffer, &beginInfo);
   }

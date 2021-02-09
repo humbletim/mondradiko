@@ -17,6 +17,8 @@
 #include "core/ui/UiPanel.h"
 #include "log/log.h"
 
+#include "c++20-polyfills.h"
+
 namespace mondradiko {
 
 UserInterface::UserInterface(GlyphLoader* glyphs, Renderer* renderer)
@@ -50,10 +52,10 @@ UserInterface::UserInterface(GlyphLoader* glyphs, Renderer* renderer)
     std::vector<VkDescriptorSetLayout> set_layouts{
         renderer->getViewportLayout()->getSetLayout()};
 
-    VkPipelineLayoutCreateInfo layoutInfo{
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        .setLayoutCount = static_cast<uint32_t>(set_layouts.size()),
-        .pSetLayouts = set_layouts.data()};
+    auto layoutInfo = with(VkPipelineLayoutCreateInfo, 
+        $.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+        $.setLayoutCount = static_cast<uint32_t>(set_layouts.size()),
+        $.pSetLayouts = set_layouts.data());
 
     if (vkCreatePipelineLayout(gpu->device, &layoutInfo, nullptr,
                                &panel_pipeline_layout) != VK_SUCCESS) {
@@ -133,18 +135,18 @@ void UserInterface::render(uint32_t frame_index, VkCommandBuffer command_buffer,
     {
       GraphicsState graphics_state;
 
-      graphics_state.input_assembly_state = {
-          .primitive_topology = GraphicsState::PrimitiveTopology::TriangleStrip,
-          .primitive_restart_enable = GraphicsState::BoolFlag::False};
+      graphics_state.input_assembly_state = with(GraphicsState::InputAssemblyState,
+          $.primitive_topology = GraphicsState::PrimitiveTopology::TriangleStrip,
+          $.primitive_restart_enable = GraphicsState::BoolFlag::False);
 
-      graphics_state.rasterization_state = {
-          .polygon_mode = GraphicsState::PolygonMode::Fill,
-          .cull_mode = GraphicsState::CullMode::None};
+      graphics_state.rasterization_state = with(GraphicsState::RasterizatonState,
+          $.polygon_mode = GraphicsState::PolygonMode::Fill,
+          $.cull_mode = GraphicsState::CullMode::None);
 
-      graphics_state.depth_state = {
-          .test_enable = GraphicsState::BoolFlag::True,
-          .write_enable = GraphicsState::BoolFlag::True,
-          .compare_op = GraphicsState::CompareOp::Less};
+      graphics_state.depth_state = with(GraphicsState::DepthState,
+          $.test_enable = GraphicsState::BoolFlag::True,
+          $.write_enable = GraphicsState::BoolFlag::True,
+          $.compare_op = GraphicsState::CompareOp::Less);
 
       panel_pipeline->cmdBind(command_buffer, graphics_state);
     }

@@ -1,4 +1,4 @@
-name: vcpkg test
+name: vcpkg test - windows
 
 on: [pull_request]
 
@@ -8,11 +8,10 @@ defaults:
 
 jobs:
   build:
-    runs-on: ubuntu-16.04
+    runs-on: windows-latest
     env:
-      CC: gcc-9
-      CXX: g++-9
       VK_VERSION: 1.2.162.1
+      PreferredToolArchitecture: x64
     steps:
       - uses: actions/checkout@v2
         with:
@@ -27,21 +26,12 @@ jobs:
           cmake --version
           git --version
           python --version
-          $CXX --version
-      - name: apt
-        run: |
-          pip3 install toml
-          sudo apt install \
-                   cmake ninja-build build-essential \
-                   libzstd-dev libfreetype6-dev \
-                   libprotobuf-dev protobuf-compiler libssl-dev \
-                   libgl1-mesa-dev libx11-xcb-dev libxcb-dri2-0-dev \
-                   libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev \
-                   libxcb-randr0-dev libxrandr-dev libxxf86vm-dev \
-                   mesa-common-dev
+          cl.exe
+      - name: toml
+        run: pip3 install toml
       - name: setup environment vars
         run: |
-             export VULKAN_SDK=$PWD/$VK_VERSION/x86_64
+             export VULKAN_SDK=$PWD/$VK_VERSION
              echo "VULKAN_SDK=$VULKAN_SDK" >> $GITHUB_ENV
              mkdir builddir
       - name: cache -- VULKAN_SDK
@@ -49,28 +39,27 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.VULKAN_SDK }}
-          key: ${{ github.head_ref }}-vulkan
-      - name: cache -- dot vcpkg
-        uses: actions/cache@v2
-        with:
-          path: /home/runner/.vcpkg
-          key: ${{ github.head_ref }}-dotvcpkg
+          key: ${{ env.VULKAN_SDK }}-windows-vulcansdk
       - name: cache -- builddir/vcpkg
         uses: actions/cache@v2
         with:
           path: builddir/vcpkg
-          key: ${{ github.head_ref }}-builddir-vcpkg
+          key: ${{ github.head_ref }}-windows-builddir-vcpkg
       - name: Download Vulkan SDK.
         if: steps.cachedvulkan.outputs.cache-hit != 'true'
+        shell: powershell
+        run: wget -O VulkanSDK-${{env.VK_VERSION}}-Installer.exe https://sdk.lunarg.com/sdk/download/${{env.VK_VERSION}}/windows/VulkanSDK-${{env.VK_VERSION}}-Installer.exe?Human=true
+      - name: Extract and prune Vulkan SDK
+        if: steps.cachedvulkan.outputs.cache-hit != 'true'
         run: |
-             wget -q -O vulkansdk-linux-x86_64-$VK_VERSION.tar.gz https://sdk.lunarg.com/sdk/download/$VK_VERSION/linux/vulkansdk-linux-x86_64-$VK_VERSION.tar.gz
-             tar zxf vulkansdk-linux-x86_64-$VK_VERSION.tar.gz
-             export VULKAN_SDK=$PWD/$VK_VERSION/x86_64
-             echo "VULKAN_SDK=$VULKAN_SDK" >> $GITHUB_ENV
-             ls
+          7z x -aoa ./VulkanSDK-${{env.VK_VERSION}}-Installer.exe -o $VULKAN_SDK
+          du -hs $VULKAN_SDK
+          rm -rf $VULKAN_SDK/{Samples,Third-Party,Tools,Tools32,Bin32,Lib32}
+          du -hs $VULKAN_SDK
+          df -h
       - name: Build
         run: |
           pushd builddir
-          cmake -GNinja -DVCPKG_ROOT=$PWD/vcpkg ..
+          cmake -GNinja -DVCPKG_ROOT=$PWD/vcpkg -DCMAKE_BUILD_TYPE=Release ..
           ninja
           popd

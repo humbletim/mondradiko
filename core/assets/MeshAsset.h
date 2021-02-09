@@ -11,6 +11,8 @@
 #include "lib/include/glm_headers.h"
 #include "lib/include/vulkan_headers.h"
 
+#include "c++20-polyfills.h"
+
 namespace mondradiko {
 
 // Forward declarations
@@ -26,9 +28,9 @@ struct MeshVertex {
   static GpuPipeline::VertexBindings getVertexBindings() {
     GpuPipeline::VertexBindings bindings(1);
 
-    bindings[0] = {.binding = 0,
-                   .stride = sizeof(MeshVertex),
-                   .inputRate = VK_VERTEX_INPUT_RATE_VERTEX};
+    bindings[0] = with(GpuPipeline::VertexBindings::value_type, $.binding = 0,
+                   $.stride = sizeof(MeshVertex),
+                   $.inputRate = VK_VERTEX_INPUT_RATE_VERTEX);
 
     return bindings;
   }
@@ -36,25 +38,25 @@ struct MeshVertex {
   static GpuPipeline::AttributeDescriptions getAttributeDescriptions() {
     GpuPipeline::AttributeDescriptions descriptions(4);
 
-    descriptions[0] = {.location = 0,
-                       .binding = 0,
-                       .format = VK_FORMAT_R32G32B32_SFLOAT,
-                       .offset = offsetof(MeshVertex, position)};
+    descriptions[0] = with(GpuPipeline::AttributeDescriptions::value_type, $.location = 0,
+                       $.binding = 0,
+                       $.format = VK_FORMAT_R32G32B32_SFLOAT,
+                       $.offset = offsetof(MeshVertex, position));
 
-    descriptions[1] = {.location = 1,
-                       .binding = 0,
-                       .format = VK_FORMAT_R32G32B32_SFLOAT,
-                       .offset = offsetof(MeshVertex, normal)};
+    descriptions[1] = with(GpuPipeline::AttributeDescriptions::value_type, $.location = 1,
+                       $.binding = 0,
+                       $.format = VK_FORMAT_R32G32B32_SFLOAT,
+                       $.offset = offsetof(MeshVertex, normal));
 
-    descriptions[2] = {.location = 2,
-                       .binding = 0,
-                       .format = VK_FORMAT_R32G32B32_SFLOAT,
-                       .offset = offsetof(MeshVertex, color)};
+    descriptions[2] = with(GpuPipeline::AttributeDescriptions::value_type, $.location = 2,
+                       $.binding = 0,
+                       $.format = VK_FORMAT_R32G32B32_SFLOAT,
+                       $.offset = offsetof(MeshVertex, color));
 
-    descriptions[3] = {.location = 3,
-                       .binding = 0,
-                       .format = VK_FORMAT_R32G32_SFLOAT,
-                       .offset = offsetof(MeshVertex, tex_coord)};
+    descriptions[3] = with(GpuPipeline::AttributeDescriptions::value_type, $.location = 3,
+                       $.binding = 0,
+                       $.format = VK_FORMAT_R32G32_SFLOAT,
+                       $.offset = offsetof(MeshVertex, tex_coord));
 
     return descriptions;
   }

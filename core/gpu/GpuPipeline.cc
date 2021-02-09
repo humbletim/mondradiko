@@ -13,6 +13,8 @@
 #include "core/gpu/GraphicsState.h"
 #include "log/log.h"
 
+#include "c++20-polyfills.h"
+
 namespace mondradiko {
 
 GpuPipeline::GpuPipeline(GpuInstance* gpu, VkPipelineLayout pipeline_layout,
@@ -187,86 +189,86 @@ GpuPipeline::StateHash GpuPipeline::createPipeline(
       vertex_shader->getStageCreateInfo(),
       fragment_shader->getStageCreateInfo()};
 
-  VkPipelineVertexInputStateCreateInfo vertex_input_info{
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-      .vertexBindingDescriptionCount =
+  auto vertex_input_info = with(VkPipelineVertexInputStateCreateInfo, 
+      $.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+      $.vertexBindingDescriptionCount =
           static_cast<uint32_t>(vertex_bindings.size()),
-      .pVertexBindingDescriptions = vertex_bindings.data(),
-      .vertexAttributeDescriptionCount =
+      $.pVertexBindingDescriptions = vertex_bindings.data(),
+      $.vertexAttributeDescriptionCount =
           static_cast<uint32_t>(attribute_descriptions.size()),
-      .pVertexAttributeDescriptions = attribute_descriptions.data()};
+      $.pVertexAttributeDescriptions = attribute_descriptions.data());
 
   VkPipelineInputAssemblyStateCreateInfo input_assembly_info{};
   createVkInputAssemblyState(graphics_state, &input_assembly_info);
 
   // TODO(marceline-cramer) Get viewport state from Viewport
-  VkViewport viewport{.x = 0.0f,
-                      .y = 0.0f,
-                      .width = static_cast<float>(500),
-                      .height = static_cast<float>(500),
-                      .minDepth = 0.0f,
-                      .maxDepth = 1.0f};
+  auto viewport = with(VkViewport, $.x = 0.0f,
+                      $.y = 0.0f,
+                      $.width = static_cast<float>(500),
+                      $.height = static_cast<float>(500),
+                      $.minDepth = 0.0f,
+                      $.maxDepth = 1.0f);
 
-  VkRect2D scissor{.offset = {0, 0}, .extent = {500, 500}};
+  auto scissor = with(VkRect2D, $.offset = {0, 0}, $.extent = {500, 500});
 
-  VkPipelineViewportStateCreateInfo viewport_info{
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-      .viewportCount = 1,
-      .pViewports = &viewport,
-      .scissorCount = 1,
-      .pScissors = &scissor};
+  auto viewport_info = with(VkPipelineViewportStateCreateInfo, 
+      $.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+      $.viewportCount = 1,
+      $.pViewports = &viewport,
+      $.scissorCount = 1,
+      $.pScissors = &scissor);
 
   VkPipelineRasterizationStateCreateInfo rasterization_info{};
   createVkRasterizationState(graphics_state, &rasterization_info);
 
-  VkPipelineMultisampleStateCreateInfo multisample_info{
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-      .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
-      .sampleShadingEnable = VK_FALSE,
-      .minSampleShading = 1.0f,
-      .pSampleMask = nullptr,
-      .alphaToCoverageEnable = VK_FALSE,
-      .alphaToOneEnable = VK_FALSE};
+  auto multisample_info = with(VkPipelineMultisampleStateCreateInfo, 
+      $.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+      $.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+      $.sampleShadingEnable = VK_FALSE,
+      $.minSampleShading = 1.0f,
+      $.pSampleMask = nullptr,
+      $.alphaToCoverageEnable = VK_FALSE,
+      $.alphaToOneEnable = VK_FALSE);
 
   VkPipelineDepthStencilStateCreateInfo depth_stencil_info{};
   createVkDepthStencilState(graphics_state, &depth_stencil_info);
 
-  VkPipelineColorBlendAttachmentState color_blend_attachment{
-      .blendEnable = VK_FALSE,
-      .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-                        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT};
+  auto color_blend_attachment = with(VkPipelineColorBlendAttachmentState, 
+      $.blendEnable = VK_FALSE,
+      $.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
 
-  VkPipelineColorBlendStateCreateInfo color_blend_info{
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
-      .logicOpEnable = VK_FALSE,
-      .attachmentCount = 1,
-      .pAttachments = &color_blend_attachment};
+  auto color_blend_info = with(VkPipelineColorBlendStateCreateInfo, 
+      $.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+      $.logicOpEnable = VK_FALSE,
+      $.attachmentCount = 1,
+      $.pAttachments = &color_blend_attachment);
 
   std::vector<VkDynamicState> dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT,
                                                 VK_DYNAMIC_STATE_SCISSOR};
 
-  VkPipelineDynamicStateCreateInfo dynamic_state_info{
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-      .dynamicStateCount = static_cast<uint32_t>(dynamic_states.size()),
-      .pDynamicStates = dynamic_states.data()};
+  auto dynamic_state_info = with(VkPipelineDynamicStateCreateInfo, 
+      $.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+      $.dynamicStateCount = static_cast<uint32_t>(dynamic_states.size()),
+      $.pDynamicStates = dynamic_states.data());
 
-  VkGraphicsPipelineCreateInfo pipeline_info{
-      .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-      .stageCount = static_cast<uint32_t>(shader_stages.size()),
-      .pStages = shader_stages.data(),
-      .pVertexInputState = &vertex_input_info,
-      .pInputAssemblyState = &input_assembly_info,
-      .pViewportState = &viewport_info,
-      .pRasterizationState = &rasterization_info,
-      .pMultisampleState = &multisample_info,
-      .pDepthStencilState = &depth_stencil_info,
-      .pColorBlendState = &color_blend_info,
-      .pDynamicState = &dynamic_state_info,
-      .layout = pipeline_layout,
-      .renderPass = render_pass,
-      .subpass = subpass_index,
-      .basePipelineHandle = VK_NULL_HANDLE,
-      .basePipelineIndex = -1};
+  auto pipeline_info = with(VkGraphicsPipelineCreateInfo, 
+      $.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+      $.stageCount = static_cast<uint32_t>(shader_stages.size()),
+      $.pStages = shader_stages.data(),
+      $.pVertexInputState = &vertex_input_info,
+      $.pInputAssemblyState = &input_assembly_info,
+      $.pViewportState = &viewport_info,
+      $.pRasterizationState = &rasterization_info,
+      $.pMultisampleState = &multisample_info,
+      $.pDepthStencilState = &depth_stencil_info,
+      $.pColorBlendState = &color_blend_info,
+      $.pDynamicState = &dynamic_state_info,
+      $.layout = pipeline_layout,
+      $.renderPass = render_pass,
+      $.subpass = subpass_index,
+      $.basePipelineHandle = VK_NULL_HANDLE,
+      $.basePipelineIndex = -1);
 
   if (vkCreateGraphicsPipelines(gpu->device, VK_NULL_HANDLE, 1, &pipeline_info,
                                 nullptr, &pipeline_object) != VK_SUCCESS) {

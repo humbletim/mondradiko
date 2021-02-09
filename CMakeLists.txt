@@ -9,11 +9,15 @@ option(TRACY_ENABLE "Enable Tracy profiling." OFF)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
+# if (WIN32 AND MSVC_VERSION GREATER_EQUAL "1900")
+#   add_compile_options("/std:c++latest")
+# endif()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 if(DEFINED VCPKG_ROOT)
   include(vcpkg)
-  vcpkg_install(glslang flatbuffers openxr-loader sdl2[vulkan] xxhash lz4 gamenetworkingsockets glm)
+  vcpkg_install(glslang flatbuffers openxr-loader sdl2[vulkan] xxhash lz4 gamenetworkingsockets glm freetype wasmtime)
 endif()
 
 include(api_bindings)

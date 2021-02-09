@@ -4,6 +4,9 @@
 set(VCPKG_SUBDIR ${CMAKE_CURRENT_LIST_DIR}) # assumes vcpkg-overlays/ and vcpkg-ports/ live next to this .cmake file
 
 macro(vcpkg_install)
+  if (WIN32)
+    set(ENV{VCPKG_DEFAULT_TRIPLET} "x64-windows")
+  endif()
   if(NOT EXISTS ${VCPKG_ROOT})
     message("Cloning vcpkg in ${VCPKG_ROOT}")
     execute_process(COMMAND git clone https://github.com/Microsoft/vcpkg.git ${VCPKG_ROOT})

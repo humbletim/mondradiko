@@ -7,6 +7,8 @@
 #include "core/gpu/GpuInstance.h"
 #include "log/log.h"
 
+#include "c++20-polyfills.h"
+
 namespace mondradiko {
 
 GpuImage::GpuImage(GpuInstance* gpu, VkFormat format, uint32_t width,
@@ -17,22 +19,22 @@ GpuImage::GpuImage(GpuInstance* gpu, VkFormat format, uint32_t width,
       width(height),
       height(height),
       gpu(gpu) {
-  VkImageCreateInfo imageCreateInfo{
-      .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-      .imageType = VK_IMAGE_TYPE_2D,
-      .format = format,
-      .extent = {.width = width, .height = height, .depth = 1},
-      .mipLevels = 1,
-      .arrayLayers = 1,
-      .samples = VK_SAMPLE_COUNT_1_BIT,
-      .tiling = VK_IMAGE_TILING_OPTIMAL,
-      .usage = image_usage_flags,
-      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-      .initialLayout = layout};
+  auto imageCreateInfo = with(VkImageCreateInfo,
+      $.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+      $.imageType = VK_IMAGE_TYPE_2D,
+      $.format = format,
+      $.extent = with(VkExtent3D, $.width = width, $.height = height, $.depth = 1),
+      $.mipLevels = 1,
+      $.arrayLayers = 1,
+      $.samples = VK_SAMPLE_COUNT_1_BIT,
+      $.tiling = VK_IMAGE_TILING_OPTIMAL,
+      $.usage = image_usage_flags,
+      $.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+      $.initialLayout = layout);
 
-  VmaAllocationCreateInfo allocationCreateInfo{
-      .flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-      .usage = memory_usage};
+  auto allocationCreateInfo = with(VmaAllocationCreateInfo,
+      $.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
+      $.usage = memory_usage);
 
   if (vmaCreateImage(gpu->allocator, &imageCreateInfo, &allocationCreateInfo,
                      &image, &allocation, &allocation_info) != VK_SUCCESS) {
@@ -56,16 +58,16 @@ void GpuImage::writeData(const void* src) {
 
   VkCommandBuffer commandBuffer = gpu->beginSingleTimeCommands();
 
-  VkBufferImageCopy region{
-      .bufferOffset = 0,
-      .bufferRowLength = 0,
-      .bufferImageHeight = 0,
-      .imageSubresource = {.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                           .mipLevel = 0,
-                           .baseArrayLayer = 0,
-                           .layerCount = 1},
-      .imageOffset = {0, 0, 0},
-      .imageExtent = {width, height, 1}};
+  auto region = with(VkBufferImageCopy,
+      $.bufferOffset = 0,
+      $.bufferRowLength = 0,
+      $.bufferImageHeight = 0,
+      $.imageSubresource = with(VkImageSubresourceLayers, $.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                           $.mipLevel = 0,
+                           $.baseArrayLayer = 0,
+                           $.layerCount = 1),
+      $.imageOffset = {0, 0, 0},
+      $.imageExtent = {width, height, 1});
 
   vkCmdCopyBufferToImage(commandBuffer, stage.getBuffer(), image, layout, 1,
                          &region);
@@ -74,18 +76,18 @@ void GpuImage::writeData(const void* src) {
 }
 
 void GpuImage::transitionLayout(VkImageLayout targetLayout) {
-  VkImageMemoryBarrier barrier{
-      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-      .oldLayout = layout,
-      .newLayout = targetLayout,
-      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .image = image,
-      .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                           .baseMipLevel = 0,
-                           .levelCount = 1,
-                           .baseArrayLayer = 0,
-                           .layerCount = 1}};
+  auto barrier = with(VkImageMemoryBarrier,
+      $.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      $.oldLayout = layout,
+      $.newLayout = targetLayout,
+      $.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      $.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      $.image = image,
+      $.subresourceRange = with(VkImageSubresourceRange, $.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                           $.baseMipLevel = 0,
+                           $.levelCount = 1,
+                           $.baseArrayLayer = 0,
+                           $.layerCount = 1));
 
   VkPipelineStageFlags sourceStage;
   VkPipelineStageFlags destinationStage;
@@ -133,16 +135,16 @@ void GpuImage::createView() {
     }
   }
 
-  VkImageViewCreateInfo viewInfo{
-      .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-      .image = image,
-      .viewType = VK_IMAGE_VIEW_TYPE_2D,
-      .format = format,
-      .subresourceRange = {.aspectMask = aspect_mask,
-                           .baseMipLevel = 0,
-                           .levelCount = 1,
-                           .baseArrayLayer = 0,
-                           .layerCount = 1}};
+  auto viewInfo = with(VkImageViewCreateInfo,
+      $.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+      $.image = image,
+      $.viewType = VK_IMAGE_VIEW_TYPE_2D,
+      $.format = format,
+      $.subresourceRange = with(VkImageSubresourceRange, $.aspectMask = aspect_mask,
+                           $.baseMipLevel = 0,
+                           $.levelCount = 1,
+                           $.baseArrayLayer = 0,
+                           $.layerCount = 1));
 
   if (vkCreateImageView(gpu->device, &viewInfo, nullptr, &view) != VK_SUCCESS) {
     log_ftl("Failed to create VulkanImage view.");

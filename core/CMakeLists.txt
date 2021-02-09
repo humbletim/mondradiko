@@ -67,4 +67,6 @@ add_library(mondradiko-core STATIC $<TARGET_OBJECTS:mondradiko-api-components> $
 target_link_libraries(mondradiko-core mondradiko-assets)
 target_link_libraries(mondradiko-core mondradiko-log)
 target_link_libraries(mondradiko-core mondradiko-lib)
-target_link_libraries(mondradiko-core mondradiko-types)
+if (NOT WIN32)
+  target_link_libraries(mondradiko-core mondradiko-types)
+endif()

@@ -1,6 +1,9 @@
 // Copyright (c) 2020-2021 the Mondradiko contributors.
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+#define _USE_MATH_DEFINES // for C++
+#include <cmath>
+
 #include "core/displays/SdlViewport.h"
 
 #include "core/displays/SdlDisplay.h"
@@ -8,6 +11,8 @@
 #include "core/gpu/GpuInstance.h"
 #include "core/renderer/Renderer.h"
 #include "log/log.h"
+
+#include "c++20-polyfills.h"
 
 namespace mondradiko {
 
@@ -24,22 +29,22 @@ SdlViewport::SdlViewport(GpuInstance* gpu, SdlDisplay* display,
   SDL_Vulkan_GetDrawableSize(display->window, &window_width, &window_height);
 
   // TODO(marceline-cramer) Better queue sharing
-  VkSwapchainCreateInfoKHR swapchain_info{
-      .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-      .surface = display->surface,
-      .minImageCount = display->surface_capabilities.minImageCount,
-      .imageFormat = display->swapchain_format,
-      .imageColorSpace = display->swapchain_color_space,
-      .imageExtent = {.width = static_cast<uint32_t>(window_width),
-                      .height = static_cast<uint32_t>(window_height)},
-      .imageArrayLayers = 1,
-      .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-      .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
-      .preTransform = display->surface_capabilities.currentTransform,
-      .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-      .presentMode = display->swapchain_present_mode,
-      .clipped = VK_TRUE,
-      .oldSwapchain = VK_NULL_HANDLE};
+  auto swapchain_info = with(VkSwapchainCreateInfoKHR,
+      $.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+      $.surface = display->surface,
+      $.minImageCount = display->surface_capabilities.minImageCount,
+      $.imageFormat = display->swapchain_format,
+      $.imageColorSpace = display->swapchain_color_space,
+      $.imageExtent = with(VkExtent2D, $.width = static_cast<uint32_t>(window_width),
+                      $.height = static_cast<uint32_t>(window_height)),
+      $.imageArrayLayers = 1,
+      $.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+      $.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
+      $.preTransform = display->surface_capabilities.currentTransform,
+      $.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+      $.presentMode = display->swapchain_present_mode,
+      $.clipped = VK_TRUE,
+      $.oldSwapchain = VK_NULL_HANDLE);
 
   if (vkCreateSwapchainKHR(gpu->device, &swapchain_info, nullptr, &swapchain) !=
       VK_SUCCESS) {
@@ -65,8 +70,8 @@ SdlViewport::SdlViewport(GpuInstance* gpu, SdlDisplay* display,
   on_image_acquire.resize(image_count);
 
   for (uint32_t i = 0; i < on_image_acquire.size(); i++) {
-    VkSemaphoreCreateInfo semaphore_info{
-        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
+    auto semaphore_info = with(VkSemaphoreCreateInfo, 
+        $.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
 
     if (vkCreateSemaphore(gpu->device, &semaphore_info, nullptr,
                           &on_image_acquire[i]) != VK_SUCCESS) {
@@ -160,12 +165,12 @@ void SdlViewport::_releaseImage(uint32_t current_image_index,
                                 VkSemaphore on_render_finished) {
   log_zone;
 
-  VkPresentInfoKHR present_info{.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-                                .waitSemaphoreCount = 1,
-                                .pWaitSemaphores = &on_render_finished,
-                                .swapchainCount = 1,
-                                .pSwapchains = &swapchain,
-                                .pImageIndices = &current_image_index};
+  auto present_info = with(VkPresentInfoKHR, $.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+                                $.waitSemaphoreCount = 1,
+                                $.pWaitSemaphores = &on_render_finished,
+                                $.swapchainCount = 1,
+                                $.pSwapchains = &swapchain,
+                                $.pImageIndices = &current_image_index);
 
   // TODO(marceline-cramer) Better queue management
   vkQueuePresentKHR(gpu->graphics_queue, &present_info);

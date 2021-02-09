@@ -8,6 +8,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <sstream>
 
 namespace mondradiko {
 
@@ -15,7 +16,7 @@ const std::filesystem::path g_root_path =
     std::filesystem::path(__FILE__).parent_path().parent_path();
 
 std::string formatPath(const std::filesystem::path& file_path) {
-  return file_path.lexically_relative(g_root_path);
+  return file_path.lexically_relative(g_root_path).string();
 }
 
 const char* getLogPrefix(LogLevel level) {

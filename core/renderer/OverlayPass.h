@@ -10,6 +10,8 @@
 #include "core/renderer/RenderPass.h"
 #include "lib/include/glm_headers.h"
 
+#include "c++20-polyfills.h"
+
 namespace mondradiko {
 
 // Forward declarations
@@ -29,9 +31,9 @@ struct DebugDrawVertex {
   static GpuPipeline::VertexBindings getVertexBindings() {
     GpuPipeline::VertexBindings bindings(1);
 
-    bindings[0] = {.binding = 0,
-                   .stride = sizeof(DebugDrawVertex),
-                   .inputRate = VK_VERTEX_INPUT_RATE_VERTEX};
+    bindings[0] = with(GpuPipeline::VertexBindings::value_type, $.binding = 0,
+                   $.stride = sizeof(DebugDrawVertex),
+                   $.inputRate = VK_VERTEX_INPUT_RATE_VERTEX);
 
     return bindings;
   }
@@ -39,15 +41,15 @@ struct DebugDrawVertex {
   static GpuPipeline::AttributeDescriptions getAttributeDescriptions() {
     GpuPipeline::AttributeDescriptions descriptions(2);
 
-    descriptions[0] = {.location = 0,
-                       .binding = 0,
-                       .format = VK_FORMAT_R32G32B32_SFLOAT,
-                       .offset = offsetof(DebugDrawVertex, position)};
+    descriptions[0] = with(GpuPipeline::AttributeDescriptions::value_type, $.location = 0,
+                       $.binding = 0,
+                       $.format = VK_FORMAT_R32G32B32_SFLOAT,
+                       $.offset = offsetof(DebugDrawVertex, position));
 
-    descriptions[1] = {.location = 1,
-                       .binding = 0,
-                       .format = VK_FORMAT_R32G32B32_SFLOAT,
-                       .offset = offsetof(DebugDrawVertex, color)};
+    descriptions[1] = with(GpuPipeline::AttributeDescriptions::value_type, $.location = 1,
+                       $.binding = 0,
+                       $.format = VK_FORMAT_R32G32B32_SFLOAT,
+                       $.offset = offsetof(DebugDrawVertex, color));
 
     return descriptions;
   }
