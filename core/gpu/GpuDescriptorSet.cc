@@ -9,8 +9,6 @@
 #include "core/gpu/GpuInstance.h"
 #include "core/gpu/GpuVector.h"
 
-#include "c++20-polyfills.h"
-
 namespace mondradiko {
 
 GpuDescriptorSet::GpuDescriptorSet(GpuInstance* gpu,
@@ -25,72 +23,74 @@ GpuDescriptorSet::GpuDescriptorSet(GpuInstance* gpu,
 GpuDescriptorSet::~GpuDescriptorSet() {}
 
 void GpuDescriptorSet::updateBuffer(uint32_t binding, GpuBuffer* buffer) {
-  auto buffer_info = with(VkDescriptorBufferInfo, 
-      $.buffer = buffer->getBuffer(),
-      $.offset = 0,
-      $.range = set_layout->getBufferSize(binding));
+  VkDescriptorBufferInfo buffer_info; 
+  buffer_info.buffer = buffer->getBuffer(),
+  buffer_info.offset = 0,
+  buffer_info.range = set_layout->getBufferSize(binding);
 
-  auto descriptor_writes = with(VkWriteDescriptorSet, 
-      $.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-      $.dstSet = descriptor_set,
-      $.dstBinding = binding,
-      $.dstArrayElement = 0,
-      $.descriptorCount = 1,
-      $.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-      $.pBufferInfo = &buffer_info);
+  VkWriteDescriptorSet descriptor_writes;
+  descriptor_writes.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  descriptor_writes.dstSet = descriptor_set;
+  descriptor_writes.dstBinding = binding;
+  descriptor_writes.dstArrayElement = 0;
+  descriptor_writes.descriptorCount = 1;
+  descriptor_writes.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  descriptor_writes.pBufferInfo = &buffer_info;
 
   vkUpdateDescriptorSets(gpu->device, 1, &descriptor_writes, 0, nullptr);
 }
 
 void GpuDescriptorSet::updateDynamicBuffer(uint32_t binding,
                                            GpuVector* buffer) {
-  auto buffer_info = with(VkDescriptorBufferInfo, 
-      $.buffer = buffer->getBuffer(),
-      $.offset = 0,
-      $.range = set_layout->getBufferSize(binding));
+  VkDescriptorBufferInfo buffer_info;
+  buffer_info.buffer = buffer->getBuffer();
+  buffer_info.offset = 0;
+  buffer_info.range = set_layout->getBufferSize(binding);
 
-  auto descriptor_writes = with(VkWriteDescriptorSet, 
-      $.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-      $.dstSet = descriptor_set,
-      $.dstBinding = binding,
-      $.dstArrayElement = 0,
-      $.descriptorCount = 1,
-      $.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
-      $.pBufferInfo = &buffer_info);
+  VkWriteDescriptorSet descriptor_writes;
+  descriptor_writes.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  descriptor_writes.dstSet = descriptor_set;
+  descriptor_writes.dstBinding = binding;
+  descriptor_writes.dstArrayElement = 0;
+  descriptor_writes.descriptorCount = 1;
+  descriptor_writes.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+  descriptor_writes.pBufferInfo = &buffer_info;
 
   vkUpdateDescriptorSets(gpu->device, 1, &descriptor_writes, 0, nullptr);
 }
 
 void GpuDescriptorSet::updateStorageBuffer(uint32_t binding,
                                            const GpuBuffer* buffer) {
-  auto buffer_info = with(VkDescriptorBufferInfo, $.buffer = buffer->getBuffer(),
-                                     $.offset = 0,
-                                     $.range = buffer->getBufferSize());
+  VkDescriptorBufferInfo buffer_info;
+  buffer_info.buffer = buffer->getBuffer();
+  buffer_info.offset = 0;
+  buffer_info.range = buffer->getBufferSize();;
 
-  auto descriptor_writes = with(VkWriteDescriptorSet, 
-      $.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-      $.dstSet = descriptor_set,
-      $.dstBinding = binding,
-      $.dstArrayElement = 0,
-      $.descriptorCount = 1,
-      $.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-      $.pBufferInfo = &buffer_info);
+  VkWriteDescriptorSet descriptor_writes;
+  descriptor_writes.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+  descriptor_writes.dstSet = descriptor_set;
+  descriptor_writes.dstBinding = binding;
+  descriptor_writes.dstArrayElement = 0;
+  descriptor_writes.descriptorCount = 1;
+  descriptor_writes.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+  descriptor_writes.pBufferInfo = &buffer_info;
 
   vkUpdateDescriptorSets(gpu->device, 1, &descriptor_writes, 0, nullptr);
 }
 
 void GpuDescriptorSet::updateImage(uint32_t binding, const GpuImage* image) {
-  auto image_info = with(VkDescriptorImageInfo, $.imageView = image->view,
-                                   $.imageLayout = image->layout);
+  VkDescriptorImageInfo image_info;
+  image_info.imageView = image->view;
+  image_info.imageLayout = image->layout;
 
-  auto descriptor_writes = with(VkWriteDescriptorSet, 
-      $.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-      $.dstSet = descriptor_set,
-      $.dstBinding = binding,
-      $.dstArrayElement = 0,
-      $.descriptorCount = 1,
-      $.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-      $.pImageInfo = &image_info);
+  VkWriteDescriptorSet descriptor_writes;
+  descriptor_writes.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  descriptor_writes.dstSet = descriptor_set;
+  descriptor_writes.dstBinding = binding;
+  descriptor_writes.dstArrayElement = 0;
+  descriptor_writes.descriptorCount = 1;
+  descriptor_writes.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  descriptor_writes.pImageInfo = &image_info;
 
   vkUpdateDescriptorSets(gpu->device, 1, &descriptor_writes, 0, nullptr);
 }

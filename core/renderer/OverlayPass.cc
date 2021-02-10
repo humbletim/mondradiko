@@ -23,8 +23,6 @@
 #include "shaders/debug.frag.h"
 #include "shaders/debug.vert.h"
 
-#include "c++20-polyfills.h"
-
 namespace mondradiko {
 
 void OverlayPass::initCVars(CVarScope* cvars) {
@@ -51,12 +49,12 @@ OverlayPass::OverlayPass(const CVarScope* cvars, const GlyphLoader* glyphs,
         renderer->getViewportLayout()->getSetLayout(),
     };
 
-    auto layoutInfo = with(VkPipelineLayoutCreateInfo, 
-        $.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        $.setLayoutCount = static_cast<uint32_t>(set_layouts.size()),
-        $.pSetLayouts = set_layouts.data());
+    VkPipelineLayoutCreateInfo layout_info;
+    layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    layout_info.setLayoutCount = static_cast<uint32_t>(set_layouts.size());
+    layout_info.pSetLayouts = set_layouts.data();
 
-    if (vkCreatePipelineLayout(gpu->device, &layoutInfo, nullptr,
+    if (vkCreatePipelineLayout(gpu->device, &layout_info, nullptr,
                                &debug_pipeline_layout) != VK_SUCCESS) {
       log_ftl("Failed to create pipeline layout.");
     }
@@ -73,12 +71,12 @@ OverlayPass::OverlayPass(const CVarScope* cvars, const GlyphLoader* glyphs,
         renderer->getViewportLayout()->getSetLayout(),
         glyph_set_layout->getSetLayout()};
 
-    auto layoutInfo = with(VkPipelineLayoutCreateInfo, 
-        $.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        $.setLayoutCount = static_cast<uint32_t>(set_layouts.size()),
-        $.pSetLayouts = set_layouts.data());
+    VkPipelineLayoutCreateInfo layout_info;
+    layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    layout_info.setLayoutCount = static_cast<uint32_t>(set_layouts.size());
+    layout_info.pSetLayouts = set_layouts.data();
 
-    if (vkCreatePipelineLayout(gpu->device, &layoutInfo, nullptr,
+    if (vkCreatePipelineLayout(gpu->device, &layout_info, nullptr,
                                &glyph_pipeline_layout) != VK_SUCCESS) {
       log_ftl("Failed to create pipeline layout.");
     }
@@ -194,18 +192,18 @@ void OverlayPass::allocateDescriptors(uint32_t frame_index,
       {
         // Draw X line
 
-        auto vertex1 = with(DebugDrawVertex, 
-            $.position = transform * glm::vec4(1.0, 0.0, 0.0, 1.0),
-            $.color = glm::vec3(1.0, 0.0, 0.0));
+        DebugDrawVertex vertex1;
+        vertex1.position = transform * glm::vec4(1.0, 0.0, 0.0, 1.0);
+        vertex1.color = glm::vec3(1.0, 0.0, 0.0);
 
         frame.debug_vertices->writeElement(vertex_count, vertex1);
         frame.debug_indices->writeElement(frame.index_count, vertex_count);
         vertex_count++;
         frame.index_count++;
 
-        auto vertex2 = with(DebugDrawVertex, 
-            $.position = transform * glm::vec4(0.0, 0.0, 0.0, 1.0),
-            $.color = glm::vec3(1.0, 0.0, 0.0));
+        DebugDrawVertex vertex2;
+        vertex2.position = transform * glm::vec4(0.0, 0.0, 0.0, 1.0);
+        vertex2.color = glm::vec3(1.0, 0.0, 0.0);
 
         frame.debug_vertices->writeElement(vertex_count, vertex2);
         frame.debug_indices->writeElement(frame.index_count, vertex_count);
@@ -216,18 +214,18 @@ void OverlayPass::allocateDescriptors(uint32_t frame_index,
       {
         // Draw Y line
 
-        auto vertex1 = with(DebugDrawVertex, 
-            $.position = transform * glm::vec4(0.0, 1.0, 0.0, 1.0),
-            $.color = glm::vec3(0.0, 1.0, 0.0));
+        DebugDrawVertex vertex1;
+        vertex1.position = transform * glm::vec4(0.0, 1.0, 0.0, 1.0);
+        vertex1.color = glm::vec3(0.0, 1.0, 0.0);
 
         frame.debug_vertices->writeElement(vertex_count, vertex1);
         frame.debug_indices->writeElement(frame.index_count, vertex_count);
         vertex_count++;
         frame.index_count++;
 
-        auto vertex2 = with(DebugDrawVertex, 
-            $.position = transform * glm::vec4(0.0, 0.0, 0.0, 1.0),
-            $.color = glm::vec3(0.0, 1.0, 0.0));
+        DebugDrawVertex vertex2;
+        vertex2.position = transform * glm::vec4(0.0, 0.0, 0.0, 1.0);
+        vertex2.color = glm::vec3(0.0, 1.0, 0.0);
 
         frame.debug_vertices->writeElement(vertex_count, vertex2);
         frame.debug_indices->writeElement(frame.index_count, vertex_count);
@@ -238,18 +236,18 @@ void OverlayPass::allocateDescriptors(uint32_t frame_index,
       {
         // Draw Z line
 
-        auto vertex1 = with(DebugDrawVertex, 
-            $.position = transform * glm::vec4(0.0, 0.0, 1.0, 1.0),
-            $.color = glm::vec3(0.0, 0.0, 1.0));
+        DebugDrawVertex vertex1;
+        vertex1.position = transform * glm::vec4(0.0, 0.0, 1.0, 1.0);
+        vertex1.color = glm::vec3(0.0, 0.0, 1.0);
 
         frame.debug_vertices->writeElement(vertex_count, vertex1);
         frame.debug_indices->writeElement(frame.index_count, vertex_count);
         vertex_count++;
         frame.index_count++;
 
-        auto vertex2 = with(DebugDrawVertex, 
-            $.position = transform * glm::vec4(0.0, 0.0, 0.0, 1.0),
-            $.color = glm::vec3(0.0, 0.0, 1.0));
+        DebugDrawVertex vertex2;
+        vertex2.position = transform * glm::vec4(0.0, 0.0, 0.0, 1.0);
+        vertex2.color = glm::vec3(0.0, 0.0, 1.0);
 
         frame.debug_vertices->writeElement(vertex_count, vertex2);
         frame.debug_indices->writeElement(frame.index_count, vertex_count);
@@ -271,8 +269,9 @@ void OverlayPass::allocateDescriptors(uint32_t frame_index,
           glm::vec3(uniform.position.x, uniform.position.y, uniform.position.z);
 
       {
-        auto vertex = with(DebugDrawVertex, $.position = position + glm::vec3(0.0, 0.1, 0.0),
-                               $.color = glm::vec3(1.0));
+        DebugDrawVertex vertex;
+        vertex.position = position + glm::vec3(0.0, 0.1, 0.0);
+        vertex.color = glm::vec3(1.0);
 
         frame.debug_vertices->writeElement(vertex_count, vertex);
         frame.debug_indices->writeElement(frame.index_count, vertex_count);
@@ -281,7 +280,9 @@ void OverlayPass::allocateDescriptors(uint32_t frame_index,
       }
 
       {
-        auto vertex = with(DebugDrawVertex, $.position = position, $.color = glm::vec3(1.0));
+        DebugDrawVertex vertex;
+        vertex.position = position;
+        vertex.color = glm::vec3(1.0);
 
         frame.debug_vertices->writeElement(vertex_count, vertex);
         frame.debug_indices->writeElement(frame.index_count, vertex_count);
@@ -304,18 +305,21 @@ void OverlayPass::render(uint32_t frame_index, VkCommandBuffer command_buffer,
     {
       GraphicsState graphics_state;
 
-      graphics_state.input_assembly_state = with(GraphicsState::InputAssemblyState,
-          $.primitive_topology = GraphicsState::PrimitiveTopology::LineList,
-          $.primitive_restart_enable = GraphicsState::BoolFlag::False);
+      GraphicsState::InputAssemblyState input_assembly_state;
+      input_assembly_state.primitive_topology = GraphicsState::PrimitiveTopology::LineList;
+      input_assembly_state.primitive_restart_enable = GraphicsState::BoolFlag::False;
+      graphics_state.input_assembly_state = input_assembly_state;
 
-      graphics_state.rasterization_state = with(GraphicsState::RasterizatonState,
-          $.polygon_mode = GraphicsState::PolygonMode::Fill,
-          $.cull_mode = GraphicsState::CullMode::None);
+      GraphicsState::RasterizatonState rasterization_state;
+      rasterization_state.polygon_mode = GraphicsState::PolygonMode::Fill;
+      rasterization_state.cull_mode = GraphicsState::CullMode::None;
+      graphics_state.rasterization_state = rasterization_state;
 
-      graphics_state.depth_state = with(GraphicsState::DepthState,
-          $.test_enable = GraphicsState::BoolFlag::False,
-          $.write_enable = GraphicsState::BoolFlag::False,
-          $.compare_op = GraphicsState::CompareOp::Always);
+      GraphicsState::DepthState depth_state;
+      depth_state.test_enable = GraphicsState::BoolFlag::False;
+      depth_state.write_enable = GraphicsState::BoolFlag::False;
+      depth_state.compare_op = GraphicsState::CompareOp::Always;
+      graphics_state.depth_state = depth_state;
 
       debug_pipeline->cmdBind(command_buffer, graphics_state);
     }
@@ -337,18 +341,21 @@ void OverlayPass::render(uint32_t frame_index, VkCommandBuffer command_buffer,
     {
       GraphicsState graphics_state;
 
-      graphics_state.input_assembly_state = with(GraphicsState::InputAssemblyState,
-          $.primitive_topology = GraphicsState::PrimitiveTopology::TriangleStrip,
-          $.primitive_restart_enable = GraphicsState::BoolFlag::False);
+      GraphicsState::InputAssemblyState input_assembly_state;
+      input_assembly_state.primitive_topology = GraphicsState::PrimitiveTopology::TriangleStrip;
+      input_assembly_state.primitive_restart_enable = GraphicsState::BoolFlag::False;
+      graphics_state.input_assembly_state = input_assembly_state;
 
-      graphics_state.rasterization_state = with(GraphicsState::RasterizatonState,
-          $.polygon_mode = GraphicsState::PolygonMode::Fill,
-          $.cull_mode = GraphicsState::CullMode::None);
+      GraphicsState::RasterizatonState rasterization_state;
+      rasterization_state.polygon_mode = GraphicsState::PolygonMode::Fill;
+      rasterization_state.cull_mode = GraphicsState::CullMode::None;
+      graphics_state.rasterization_state = rasterization_state;
 
-      graphics_state.depth_state = with(GraphicsState::DepthState,
-          $.test_enable = GraphicsState::BoolFlag::False,
-          $.write_enable = GraphicsState::BoolFlag::False,
-          $.compare_op = GraphicsState::CompareOp::Always);
+      GraphicsState::DepthState depth_state;
+      depth_state.test_enable = GraphicsState::BoolFlag::False;
+      depth_state.write_enable = GraphicsState::BoolFlag::False;
+      depth_state.compare_op = GraphicsState::CompareOp::Always;
+      graphics_state.depth_state = depth_state;
 
       glyph_pipeline->cmdBind(command_buffer, graphics_state);
     }

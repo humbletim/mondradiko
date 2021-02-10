@@ -8,8 +8,6 @@
 #include "core/gpu/GpuInstance.h"
 #include "log/log.h"
 
-#include "c++20-polyfills.h"
-
 namespace mondradiko {
 
 GpuBuffer::GpuBuffer(GpuInstance* gpu, size_t initial_size,
@@ -34,13 +32,15 @@ void GpuBuffer::reserve(size_t target_size) {
 
   allocation = nullptr;
 
-  auto bufferInfo = with(VkBufferCreateInfo, $.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-                                $.size = target_size,
-                                $.usage = buffer_usage_flags,
-                                $.sharingMode = VK_SHARING_MODE_EXCLUSIVE);
+  VkBufferCreateInfo bufferInfo;
+  bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+  bufferInfo.size = target_size;
+  bufferInfo.usage = buffer_usage_flags;
+  bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-  auto allocationCreateInfo = with(VmaAllocationCreateInfo, 
-      $.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT, $.usage = memory_usage);
+  VmaAllocationCreateInfo allocationCreateInfo;
+  allocationCreateInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
+  allocationCreateInfo.usage = memory_usage;
 
   if (vmaCreateBuffer(gpu->allocator, &bufferInfo, &allocationCreateInfo,
                       &buffer, &allocation, &allocation_info) != VK_SUCCESS) {
