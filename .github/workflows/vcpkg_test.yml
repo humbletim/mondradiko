@@ -46,14 +46,33 @@ jobs:
           key: 20210209-${{ github.head_ref }}-windows-builddir-vcpkg
       - name: Configure
         run: |
-          cmake -DVCPKG_ROOT=vcpkg -S. -B./builddir -DCMAKE_BUILD_TYPE=Release
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true          
+          cmake -DVCPKG_ROOT=vcpkg -GNinja -S. -B./builddir -DCMAKE_BUILD_TYPE=Release
+      - name: Generate
+        run: |
+          ninja -C builddir \
+            types/assets/MaterialAsset_generated.h \
+            types/assets/MeshAsset_generated.h \
+            types/assets/PrefabAsset_generated.h \
+            types/assets/Registry_generated.h \
+            types/assets/ScriptAsset_generated.h \
+            types/assets/SerializedAsset_generated.h \
+            types/assets/TextureAsset_generated.h \
+            types/assets/types_generated.h \
+            types/protocol/ClientEvent_generated.h \
+            types/protocol/MeshRendererComponent_generated.h \
+            types/protocol/PointLightComponent_generated.h \
+            types/protocol/ScriptData_generated.h \
+            types/protocol/ServerEvent_generated.h \
+            types/protocol/TransformComponent_generated.h \
+            types/protocol/types_generated.h \
+            types/protocol/WorldEvent_generated.h
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     limit-access-to-actor: true
       - name: Build
         run: |
-          pushd builddir
-          ls
-          ninja
-          popd
+          ninja -C builddir
+          ls -lrth builddir/bundler
+          ls -lrth builddir/server
+          ls -lrth builddir/client
