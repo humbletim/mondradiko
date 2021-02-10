@@ -305,17 +305,19 @@ void OverlayPass::render(uint32_t frame_index, VkCommandBuffer command_buffer,
     {
       GraphicsState graphics_state;
 
-      GraphicsState::InputAssemblyState input_assembly_state;
-      input_assembly_state.primitive_topology = GraphicsState::PrimitiveTopology::LineList;
-      input_assembly_state.primitive_restart_enable = GraphicsState::BoolFlag::False;
+      GraphicsState::InputAssemblyState input_assembly_state{};
+      input_assembly_state.primitive_topology =
+          GraphicsState::PrimitiveTopology::LineList;
+      input_assembly_state.primitive_restart_enable =
+          GraphicsState::BoolFlag::False;
       graphics_state.input_assembly_state = input_assembly_state;
 
-      GraphicsState::RasterizatonState rasterization_state;
+      GraphicsState::RasterizatonState rasterization_state{};
       rasterization_state.polygon_mode = GraphicsState::PolygonMode::Fill;
       rasterization_state.cull_mode = GraphicsState::CullMode::None;
       graphics_state.rasterization_state = rasterization_state;
 
-      GraphicsState::DepthState depth_state;
+      GraphicsState::DepthState depth_state{};
       depth_state.test_enable = GraphicsState::BoolFlag::False;
       depth_state.write_enable = GraphicsState::BoolFlag::False;
       depth_state.compare_op = GraphicsState::CompareOp::Always;
@@ -341,17 +343,19 @@ void OverlayPass::render(uint32_t frame_index, VkCommandBuffer command_buffer,
     {
       GraphicsState graphics_state;
 
-      GraphicsState::InputAssemblyState input_assembly_state;
-      input_assembly_state.primitive_topology = GraphicsState::PrimitiveTopology::TriangleStrip;
-      input_assembly_state.primitive_restart_enable = GraphicsState::BoolFlag::False;
+      GraphicsState::InputAssemblyState input_assembly_state{};
+      input_assembly_state.primitive_topology =
+          GraphicsState::PrimitiveTopology::TriangleStrip;
+      input_assembly_state.primitive_restart_enable =
+          GraphicsState::BoolFlag::False;
       graphics_state.input_assembly_state = input_assembly_state;
 
-      GraphicsState::RasterizatonState rasterization_state;
+      GraphicsState::RasterizatonState rasterization_state{};
       rasterization_state.polygon_mode = GraphicsState::PolygonMode::Fill;
       rasterization_state.cull_mode = GraphicsState::CullMode::None;
       graphics_state.rasterization_state = rasterization_state;
 
-      GraphicsState::DepthState depth_state;
+      GraphicsState::DepthState depth_state{};
       depth_state.test_enable = GraphicsState::BoolFlag::False;
       depth_state.write_enable = GraphicsState::BoolFlag::False;
       depth_state.compare_op = GraphicsState::CompareOp::Always;

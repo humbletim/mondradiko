@@ -36,13 +36,15 @@ OpenXrDisplay::OpenXrDisplay() {
     log_zone_named("Populate debug messenger info");
 
     debug_messenger_info.type = XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    debug_messenger_info.messageSeverities = XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
-                         XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                         XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-    debug_messenger_info.messageTypes = XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                    XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                    XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT |
-                    XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT;
+    debug_messenger_info.messageSeverities =
+        XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+        XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+        XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    debug_messenger_info.messageTypes =
+        XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+        XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+        XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT |
+        XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT;
     debug_messenger_info.userCallback = debugCallbackOpenXR;
   }
 
@@ -66,7 +68,8 @@ OpenXrDisplay::OpenXrDisplay() {
     instance_info.type = XR_TYPE_INSTANCE_CREATE_INFO;
     instance_info.applicationInfo = appInfo;
     instance_info.enabledApiLayerCount = 0;
-    instance_info.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+    instance_info.enabledExtensionCount =
+        static_cast<uint32_t>(extensions.size());
     instance_info.enabledExtensionNames = extensions.data();
 
     XrResult result = xrCreateInstance(&instance_info, &instance);
@@ -125,7 +128,8 @@ OpenXrDisplay::~OpenXrDisplay() {
   if (enable_validation_layers && debug_messenger != VK_NULL_HANDLE)
     ext_xrDestroyDebugUtilsMessengerEXT(debug_messenger);
 
-  if (instance != XR_NULL_HANDLE) xrDestroyInstance(instance);
+  if (instance != XR_NULL_HANDLE)
+    xrDestroyInstance(instance);
 }
 
 bool OpenXrDisplay::createSession(GpuInstance* _gpu) {
@@ -191,9 +195,12 @@ void OpenXrDisplay::destroySession() {
 
   vkDeviceWaitIdle(gpu->device);
 
-  for (auto& viewport : viewports) delete viewport;
-  if (stage_space != XR_NULL_HANDLE) xrDestroySpace(stage_space);
-  if (session != XR_NULL_HANDLE) xrDestroySession(session);
+  for (auto &viewport : viewports)
+    delete viewport;
+  if (stage_space != XR_NULL_HANDLE)
+    xrDestroySpace(stage_space);
+  if (session != XR_NULL_HANDLE)
+    xrDestroySession(session);
 
   viewports.resize(0);
   stage_space = XR_NULL_HANDLE;
@@ -203,7 +210,6 @@ void OpenXrDisplay::destroySession() {
 bool OpenXrDisplay::getVulkanRequirements(VulkanRequirements* requirements) {
   XrGraphicsRequirementsVulkanKHR vulkanRequirements;
   vulkanRequirements.type = XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN_KHR;
-
   if (ext_xrGetVulkanGraphicsRequirementsKHR(
           instance, system_id, &vulkanRequirements) != XR_SUCCESS) {
     log_err("Failed to get OpenXR Vulkan requirements.");
@@ -317,7 +323,7 @@ void OpenXrDisplay::pollEvents(DisplayPollEventsInfo* poll_info) {
         break;
     }  // switch (event.type)
 
-    event = XrEventDataBuffer{}; // TODO(humbletim) -- necessary?
+    event = XrEventDataBuffer{};  // TODO(humbletim) -- necessary?
     event.type = XR_TYPE_EVENT_DATA_BUFFER;
   }
 
@@ -350,7 +356,7 @@ void OpenXrDisplay::pollEvents(DisplayPollEventsInfo* poll_info) {
 void OpenXrDisplay::beginFrame(DisplayBeginFrameInfo* frame_info) {
   log_zone;
 
-  current_frame_state = XrFrameState{}; // TODO(humbletim) -- necessary?
+  current_frame_state = XrFrameState{};  // TODO(humbletim) -- necessary?
   current_frame_state.type = XR_TYPE_FRAME_STATE;
 
   xrWaitFrame(session, nullptr, &current_frame_state);
