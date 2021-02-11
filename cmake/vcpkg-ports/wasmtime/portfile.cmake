@@ -10,7 +10,7 @@ elseif (VCPKG_TARGET_IS_OSX)
 elseif (VCPKG_TARGET_IS_LINUX)
 	vcpkg_download_distfile(
 		WASMTIME_ARCHIVE
-		URLS https://github.com/bytecodealliance/wasmtime/releases/download/v0.21.0/wasmtime-v0.21.0-x86_64-linux-c-api.tar.gz
+		URLS https://github.com/bytecodealliance/wasmtime/releases/download/v0.21.0/wasmtime-v0.21.0-x86_64-linux-c-api.tar.xz
 		SHA512 35184a47c3c3db89ced2abe5900ae1a840d67f4f90a0ee79c5adcde11b84a47bdf5af78f9a929ce206a6687604d668ad2673f342a69ee11e74d7158a4b544de8
 		FILENAME wasmtime-v0.21.0-x86_64-linux-c-api.tar.gz
 	)
