@@ -1,4 +1,4 @@
-name: vcpkg test - windows
+name: vcpkg test - combined
 
 on: [pull_request]
 
@@ -7,8 +7,52 @@ defaults:
     shell: bash
 
 jobs:
-  build:
-    environment: test
+  build-linux:
+    runs-on: ubuntu-16.04
+    env:
+      CC: gcc-9
+      CXX: g++-9
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+          architecture: x64
+      - uses: humbletim/setup-vulkan-sdk@v1.0.1
+      - name: Get software versions please
+        run: |
+          echo VULKAN_SDK_VERSION=$VULKAN_SDK_VERSION
+          cmake --version
+          git --version
+          python --version
+          $CXX --version
+      - name: apt
+        run: |
+          pip3 install toml
+          sudo apt install \
+                   cmake ninja-build build-essential \
+                   libzstd-dev libfreetype6-dev \
+                   libprotobuf-dev protobuf-compiler libssl-dev \
+                   libgl1-mesa-dev libx11-xcb-dev libxcb-dri2-0-dev \
+                   libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev \
+                   libxcb-randr0-dev libxrandr-dev libxxf86vm-dev \
+                   mesa-common-dev
+      - name: cache -- builddir/vcpkg
+        uses: actions/cache@v2
+        with:
+          path: builddir/vcpkg
+          key: ${{ github.head_ref }}-builddir-vcpkg
+      - name: Build
+        run: |
+          ninja -C builddir
+          ls -lrth builddir/bundler
+          ls -lrth builddir/server
+          ls -lrth builddir/client
+
+  build-windows:
     runs-on: windows-latest
     env:
       PreferredToolArchitecture: x64
@@ -66,10 +110,6 @@ jobs:
             types/protocol/TransformComponent_generated.h \
             types/protocol/types_generated.h \
             types/protocol/WorldEvent_generated.h
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
-      #   with:
-      #     limit-access-to-actor: true
       - name: Build
         run: |
           ninja -C builddir
