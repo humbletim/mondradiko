@@ -37,7 +37,7 @@ MeshPass::MeshPass(Renderer* renderer, World* world)
   {
     log_zone_named("Create texture sampler");
 
-    VkSamplerCreateInfo sampler_info;
+    VkSamplerCreateInfo sampler_info{};
     sampler_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
     sampler_info.magFilter = VK_FILTER_LINEAR;
     sampler_info.minFilter = VK_FILTER_LINEAR;
@@ -82,10 +82,10 @@ MeshPass::MeshPass(Renderer* renderer, World* world)
         material_layout->getSetLayout(), texture_layout->getSetLayout(),
         mesh_layout->getSetLayout()};
 
-    VkPipelineLayoutCreateInfo layoutInfo;
-        layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        layoutInfo.setLayoutCount = static_cast<uint32_t>(set_layouts.size());
-        layoutInfo.pSetLayouts = set_layouts.data();
+    VkPipelineLayoutCreateInfo layoutInfo{};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    layoutInfo.setLayoutCount = static_cast<uint32_t>(set_layouts.size());
+    layoutInfo.pSetLayouts = set_layouts.data();
 
     if (vkCreatePipelineLayout(gpu->device, &layoutInfo, nullptr,
                                &pipeline_layout) != VK_SUCCESS) {

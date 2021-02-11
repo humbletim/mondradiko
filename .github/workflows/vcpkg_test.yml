@@ -24,7 +24,7 @@ jobs:
           python-version: 3.6
           architecture: x64
       - uses: seanmiddleditch/gha-setup-vsdevenv@master
-      - uses: humbletim/setup-vulkan-sdk@v1
+      - uses: humbletim/setup-vulkan-sdk@v1.0.1
       - name: Get software versions please
         run: |
           echo VULKAN_SDK_VERSION=$VULKAN_SDK_VERSION

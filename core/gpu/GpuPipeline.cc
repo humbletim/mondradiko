@@ -202,7 +202,7 @@ GpuPipeline::StateHash GpuPipeline::createPipeline(
   createVkInputAssemblyState(graphics_state, &input_assembly_info);
 
   // TODO(marceline-cramer) Get viewport state from Viewport
-  VkViewport viewport;
+  VkViewport viewport{};
   viewport.x = 0.0f;
   viewport.y = 0.0f;
   viewport.width = static_cast<float>(500);
@@ -210,11 +210,11 @@ GpuPipeline::StateHash GpuPipeline::createPipeline(
   viewport.minDepth = 0.0f;
   viewport.maxDepth = 1.0f;
 
-  VkRect2D scissor;
+  VkRect2D scissor{};
   scissor.offset = {0, 0};
   scissor.extent = {500, 500};
 
-  VkPipelineViewportStateCreateInfo viewport_info;
+  VkPipelineViewportStateCreateInfo viewport_info{};
   viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
   viewport_info.viewportCount = 1;
   viewport_info.pViewports = &viewport;
@@ -260,7 +260,7 @@ GpuPipeline::StateHash GpuPipeline::createPipeline(
       static_cast<uint32_t>(dynamic_states.size());
   dynamic_state_info.pDynamicStates = dynamic_states.data();
 
-  VkGraphicsPipelineCreateInfo pipeline_info;
+  VkGraphicsPipelineCreateInfo pipeline_info{};
   pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
   pipeline_info.stageCount = static_cast<uint32_t>(shader_stages.size());
   pipeline_info.pStages = shader_stages.data();
@@ -279,8 +279,8 @@ GpuPipeline::StateHash GpuPipeline::createPipeline(
   pipeline_info.basePipelineIndex = -1;
 
   if (vkCreateGraphicsPipelines(gpu->device, VK_NULL_HANDLE, 1, &pipeline_info,
-                              nullptr, &pipeline_object) != VK_SUCCESS) {
-  log_ftl("Failed to create pipeline 0x%0lx", state_hash);
+                                nullptr, &pipeline_object) != VK_SUCCESS) {
+    log_ftl("Failed to create pipeline 0x%0lx", state_hash);
   }
 
   pipelines.emplace(state_hash, pipeline_object);
