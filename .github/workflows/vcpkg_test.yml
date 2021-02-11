@@ -21,10 +21,8 @@ jobs:
         with:
           python-version: 3.6
           architecture: x64
-      - uses: humbletim/setup-vulkan-sdk@v1.0.1
       - name: Get software versions please
         run: |
-          echo VULKAN_SDK_VERSION=$VULKAN_SDK_VERSION
           cmake --version
           git --version
           python --version
@@ -32,14 +30,7 @@ jobs:
       - name: apt
         run: |
           pip3 install toml
-          sudo apt install \
-                   cmake ninja-build build-essential \
-                   libzstd-dev libfreetype6-dev \
-                   libprotobuf-dev protobuf-compiler libssl-dev \
-                   libgl1-mesa-dev libx11-xcb-dev libxcb-dri2-0-dev \
-                   libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev \
-                   libxcb-randr0-dev libxrandr-dev libxxf86vm-dev \
-                   mesa-common-dev
+          sudo apt install ninja-build libwayland-dev libxrandr-dev
       - name: setup environment vars
         run: |
              echo "Python3_EXECUTABLE=$(which python)" >> $GITHUB_ENV
@@ -47,8 +38,17 @@ jobs:
       - name: cache -- builddir/vcpkg
         uses: actions/cache@v2
         with:
-          path: builddir/vcpkg
-          key: ${{ github.head_ref }}-builddir-vcpkg
+          key: ${{ github.head_ref }}-builddir-clean-vcpkg
+          restore-keys: ${{ github.head_ref }}-builddir-vcpkg
+          path: |
+            builddir/vcpkg
+            !builddir/vcpkg/packages
+            !builddir/vcpkg/buildtrees
+            !builddir/vcpkg/downloads
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     limit-access-to-actor: true
       - name: Configure
         run: |
           cmake -DVCPKG_ROOT=vcpkg -GNinja -S. -B./builddir -DCMAKE_BUILD_TYPE=Release
@@ -75,10 +75,8 @@ jobs:
           python-version: 3.6
           architecture: x64
       - uses: seanmiddleditch/gha-setup-vsdevenv@master
-      - uses: humbletim/setup-vulkan-sdk@v1.0.1
       - name: Get software versions please
         run: |
-          echo VULKAN_SDK_VERSION=$VULKAN_SDK_VERSION
           cmake --version
           git --version
           python --version
@@ -93,8 +91,13 @@ jobs:
         # uses: pat-s/always-upload-cache@v2.1.3
         uses: actions/cache@v2
         with:
-          path: builddir/vcpkg
-          key: 20210209-${{ github.head_ref }}-windows-builddir-vcpkg
+          key: 20210211-${{ github.head_ref }}-windows-builddir-clean-vcpkg
+          restore-keys: 20210209-${{ github.head_ref }}-windows-builddir-vcpkg
+          path: |
+            builddir/vcpkg
+            !builddir/vcpkg/packages
+            !builddir/vcpkg/buildtrees
+            !builddir/vcpkg/downloads
       - name: Configure
         run: |
           cmake -DVCPKG_ROOT=vcpkg -GNinja -S. -B./builddir -DCMAKE_BUILD_TYPE=Release

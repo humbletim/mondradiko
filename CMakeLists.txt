@@ -31,7 +31,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 if(DEFINED VCPKG_ROOT)
   include(vcpkg)
-  vcpkg_install(glslang flatbuffers openxr-loader sdl2[vulkan] xxhash lz4 gamenetworkingsockets glm freetype wasmtime)
+  vcpkg_install(glslang flatbuffers openxr-loader sdl2[vulkan] xxhash lz4 gamenetworkingsockets glm freetype wasmtime vulkan-sdk-minimal)
 endif()
 
 include(SPIR-V)
