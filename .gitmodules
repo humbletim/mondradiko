@@ -7,3 +7,6 @@
 [submodule "lib/gamenetworkingsockets"]
 	path = lib/gamenetworkingsockets
 	url = https://github.com/ValveSoftware/GameNetworkingSockets.git
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/Microsoft/vcpkg.git
