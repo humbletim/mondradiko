@@ -34,7 +34,6 @@ if(DEFINED VCPKG_ROOT)
   vcpkg_install(glslang flatbuffers openxr-loader sdl2[vulkan] xxhash lz4 gamenetworkingsockets glm freetype wasmtime)
 endif()
 
-include(api_bindings)
 include(SPIR-V)
 include(flatc)
 
