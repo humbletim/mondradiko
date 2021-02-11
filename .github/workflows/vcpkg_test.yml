@@ -49,6 +49,9 @@ jobs:
         with:
           path: builddir/vcpkg
           key: ${{ github.head_ref }}-builddir-vcpkg
+      - name: Configure
+        run: |
+          cmake -DVCPKG_ROOT=vcpkg -GNinja -S. -B./builddir -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: |
           ninja -C builddir
