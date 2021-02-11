@@ -1,7 +1,13 @@
 # Copyright (c) 2020-2021 the Mondradiko contributors.
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
-find_package(Python3 REQUIRED)
+set(Python3_EXECUTABLE $ENV{Python3_EXECUTABLE})
+if (Python3_EXECUTABLE)
+  message(STATUS "Using Python3_EXECUTABLE = ${Python3_EXECUTABLE}")
+else()
+  find_package(Python3 3.6 REQUIRED)
+endif()
+
 set(GENERATE_BINDING_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/generate_binding.py")
 
 #
