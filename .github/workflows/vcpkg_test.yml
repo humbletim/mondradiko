@@ -40,6 +40,10 @@ jobs:
                    libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev \
                    libxcb-randr0-dev libxrandr-dev libxxf86vm-dev \
                    mesa-common-dev
+      - name: setup environment vars
+        run: |
+             echo "Python3_EXECUTABLE=$(which python)" >> $GITHUB_ENV
+             mkdir builddir
       - name: cache -- builddir/vcpkg
         uses: actions/cache@v2
         with:
