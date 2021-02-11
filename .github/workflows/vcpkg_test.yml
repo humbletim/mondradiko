@@ -28,7 +28,7 @@ jobs:
           submodules: 'true'
 
       - name: Setup VsDev environment
-        if: runner.os == 'Linux'
+        if: runner.os == 'Windows'
         uses: seanmiddleditch/gha-setup-vsdevenv@master
 
       - name: apt
@@ -49,7 +49,11 @@ jobs:
           cmake --version
           git --version
           python --version
-          $CXX --version
+          if [ "$CXX" == "cl.exe" ]; then
+            $CXX
+          else
+              $CXX --version
+          fi
 
       - name: setup environment vars
         run: |
