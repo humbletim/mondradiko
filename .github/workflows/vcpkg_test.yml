@@ -60,17 +60,17 @@ jobs:
              echo "Python3_EXECUTABLE=$(which python)" >> $GITHUB_ENV
              mkdir builddir
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
-
       - name: cache -- builddir/vcpkg_installed
         uses: actions/cache@v2
         with:
           path: builddir/vcpkg_installed
           key: ${{ matrix.os }}-${{ github.head_ref }}-builddir-vcpkg-manifestmode
           #restore-keys: ${{ github.head_ref }}-builddir-vcpkg
+
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     limit-access-to-actor: true
 
       - name: Configure
         run: cmake -GNinja -S. -B./builddir -DCMAKE_BUILD_TYPE=Release

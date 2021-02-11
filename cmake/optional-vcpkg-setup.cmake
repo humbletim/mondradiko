@@ -11,8 +11,8 @@ macro(enable_vcpkg_support)
   message(STATUS "***** VCPKG MODE ENABLED *****")
 endmacro()
 
-if (ENV{USE_VCPKG} AND NOT DEFINED USE_VCPKG)
-  set(USE_VCPKG ENV{USE_VCPKG})
+if (DEFINED ENV{USE_VCPKG} AND NOT DEFINED USE_VCPKG)
+  set(USE_VCPKG $ENV{USE_VCPKG})
 endif()
 
 if (USE_VCPKG)
