@@ -103,8 +103,8 @@ jobs:
       - name: Verify
         run: |
           ls -lrth builddir/client
-          ./builddir/client/mondradiko-client.exe --version || true
+          ./builddir/client/mondradiko-client --version || true
           ls -lrth builddir/server
-          ./builddir/server/mondradiko-server.exe --version || true
+          ./builddir/server/mondradiko-server --version || true
           ls -lrth builddir/bundler
-          ./builddir/bundler/mondradiko-bundler.exe --version || true
+          ./builddir/bundler/mondradiko-bundler --version || true
