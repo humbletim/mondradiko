@@ -16,6 +16,7 @@
     "lz4",
     "gamenetworkingsockets",
     "glm",
+    "msdfgen",
     "freetype",
     "wasmtime-prebuilt"
   ]

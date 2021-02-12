@@ -12,6 +12,7 @@ if (USE_VCPKG)
   find_package(SDL2 CONFIG REQUIRED)
   find_package(xxHash CONFIG REQUIRED)
   find_package(wasmtime CONFIG REQUIRED)
+  find_package(msdfgen CONFIG REQUIRED)
 else()
   pkg_check_modules(SDL2 REQUIRED sdl2)
   pkg_check_modules(OPENXR REQUIRED openxr)
@@ -81,8 +82,6 @@ target_link_libraries(mondradiko-lib PUBLIC ${Vulkan_LIBRARIES})
 target_include_directories(mondradiko-lib PUBLIC ${Vulkan_INCLUDE_DIRS})
 target_compile_options(mondradiko-lib PUBLIC ${Vulkan_CFLAGS_OTHER})
 
-# Add msdfgen
-add_subdirectory(msdfgen)
 target_link_libraries(mondradiko-lib PUBLIC msdfgen::msdfgen)
 target_link_libraries(mondradiko-lib PUBLIC msdfgen::msdfgen-ext)
 
