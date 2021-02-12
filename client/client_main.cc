@@ -39,10 +39,10 @@ struct ClientArgs {
 
   std::string config_path = "./config.toml";
 
-  int parse(int, const char*[]);
+  int parse(int, char*[]);
 };
 
-int ClientArgs::parse(int argc, const char* argv[]) {
+int ClientArgs::parse(int argc, char* argv[]) {
   CLI::App app("Mondradiko client");
 
   app.add_flag("-v,--version", version, "Print version and exit");
@@ -129,7 +129,7 @@ void signalHandler(int signum) {
   return;
 }
 
-int main(int argc, const char* argv[]) {
+int main(int argc, char* argv[]) {
   ClientArgs args;
   int parse_result = args.parse(argc, argv);
   if (parse_result != -1) return parse_result;
