@@ -17,6 +17,9 @@ jobs:
           - os: ubuntu-16.04
             cc: gcc-9
             cxx: g++-9
+          - os: ubuntu-16.04
+            cc: clang-9
+            cxx: clang++-9
     runs-on: ${{ matrix.os }}
     env:
       USE_VCPKG: ON
@@ -60,11 +63,17 @@ jobs:
              echo "Python3_EXECUTABLE=$(which python)" >> $GITHUB_ENV
              mkdir builddir
 
-      - name: cache -- builddir/vcpkg_installed
+      - name: cache -- vcpkg, builddir/vcpkg_installed
         uses: actions/cache@v2
         with:
-          path: builddir/vcpkg_installed
-          key: ${{ matrix.os }}-${{ github.head_ref }}-builddir-vcpkg-manifestmode
+          path: |
+            vcpkg
+            !vcpkg/buildtrees
+            !vcpkg/downloads
+            !vcpkg/packages
+            builddir/vcpkg_installed
+          key: ${{ matrix.os }}-${{ matrix.cc }}-${{ github.head_ref }}-builddir-vcpkg-manifestmode
+          restore-keys: ${{ matrix.os }}-${{ github.head_ref }}-builddir-vcpkg-manifestmode
           #restore-keys: ${{ github.head_ref }}-builddir-vcpkg
 
       # - name: Setup tmate session
