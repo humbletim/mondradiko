@@ -34,9 +34,11 @@ jobs:
         if: runner.os == 'Windows'
         uses: seanmiddleditch/gha-setup-vsdevenv@master
 
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
       - name: apt
         if: runner.os == 'Linux'
-        run: sudo apt install ninja-build libwayland-dev libxrandr-dev
+        run: sudo apt install libwayland-dev libxrandr-dev
 
       - name: Setup python
         uses: actions/setup-python@v2
