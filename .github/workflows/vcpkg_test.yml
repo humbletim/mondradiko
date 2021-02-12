@@ -73,7 +73,8 @@ jobs:
       #     limit-access-to-actor: true
 
       - name: Configure
-        run: cmake -GNinja -S. -B./builddir -DCMAKE_BUILD_TYPE=Release
+        run: |
+          cmake -GNinja -S. -B./builddir -DCMAKE_BUILD_TYPE=Release
 
       - name: Generate
         run: |
@@ -96,10 +97,14 @@ jobs:
             types/protocol/WorldEvent_generated.h
 
       - name: Build
-        run: ninja -C builddir
+        run: |
+          ninja -C builddir
 
       - name: Verify
         run: |
-          ls -lrth builddir/bundler
-          ls -lrth builddir/server
           ls -lrth builddir/client
+          ./builddir/client/mondradiko-client.exe --version || true
+          ls -lrth builddir/server
+          ./builddir/server/mondradiko-server.exe --version || true
+          ls -lrth builddir/bundler
+          ./builddir/bundler/mondradiko-bundler.exe --version || true
