@@ -1,7 +1,7 @@
 // Copyright (c) 2020-2021 the Mondradiko contributors.
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "assets/loading/AssetBundle.h"
+#include "core/filesystem/AssetBundle.h"
 
 #include <cstring>
 #include <fstream>
@@ -30,7 +30,7 @@ AssetResult AssetBundle::loadRegistry(const char* registry_name) {
 
     auto registry_path = bundle_root / registry_name;
 
-    log_dbg("Opening asset bundle at %s", registry_path.c_str());
+    log_msg_fmt("Opening asset bundle at %s", registry_path.c_str());
 
     if (!std::filesystem::exists(registry_path)) {
       return AssetResult::FileNotFound;
@@ -70,7 +70,8 @@ AssetResult AssetBundle::loadRegistry(const char* registry_name) {
     }
 
     if (registry->lumps()->size() > ASSET_REGISTRY_MAX_LUMPS) {
-      log_err("Registry lump count exceeds limit of %d", ASSET_LUMP_MAX_ASSETS);
+      log_err_fmt("Registry lump count exceeds limit of %lu",
+                  ASSET_LUMP_MAX_ASSETS);
       return AssetResult::BadSize;
     }
   }
@@ -90,7 +91,7 @@ AssetResult AssetBundle::loadRegistry(const char* registry_name) {
     log_zone_named("Load lumps");
 
     uint32_t lump_count = registry->lumps()->size();
-    lump_cache.resize(lump_count, { /*.lump=*/ nullptr });
+    lump_cache.resize(lump_count, {/*.lump=*/nullptr});
 
     for (uint32_t lump_index = 0; lump_index < lump_count; lump_index++) {
       const LumpEntry* lump_entry = registry->lumps()->Get(lump_index);
@@ -98,8 +99,8 @@ AssetResult AssetBundle::loadRegistry(const char* registry_name) {
       uint32_t asset_count = lump_entry->assets()->size();
 
       if (asset_count > ASSET_LUMP_MAX_ASSETS) {
-        log_err("Asset lump asset count exceeds limit of %d",
-                ASSET_LUMP_MAX_ASSETS);
+        log_err_fmt("Asset lump asset count exceeds limit of %lu",
+                    ASSET_LUMP_MAX_ASSETS);
         return AssetResult::BadSize;
       }
 

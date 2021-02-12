@@ -18,8 +18,6 @@ spirv_shaders(SHADER_HEADERS
   shaders/panel.vert
 )
 
-configure_file(build_config.h.in build_config.h)
-
 #
 # Build core source
 #
@@ -39,6 +37,8 @@ set(MONDRADIKO_CORE_SRC
   displays/SdlDisplay.cc
   displays/SdlViewport.cc
   displays/Viewport.cc
+  filesystem/AssetBundle.cc
+  filesystem/AssetLump.cc
   filesystem/Filesystem.cc
   gpu/GpuBuffer.cc
   gpu/GpuDescriptorPool.cc

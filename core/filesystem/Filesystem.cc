@@ -21,8 +21,8 @@ bool Filesystem::loadAssetBundle(const std::filesystem::path& bundle_root) {
   assets::AssetBundle* asset_bundle = new assets::AssetBundle(bundle_root);
   auto result = asset_bundle->loadRegistry("registry.bin");
   if (result != assets::AssetResult::Success) {
-    log_err(assets::getAssetResultString(result));
-    log_err("Failed to load asset bundle registry.");
+    const char* error_string = assets::getAssetResultString(result);
+    log_err_fmt("Failed to load asset bundle registry: %s", error_string);
     delete asset_bundle;
     return false;
   }
@@ -60,12 +60,12 @@ bool Filesystem::loadAsset(const assets::SerializedAsset** asset, AssetId id) {
     }
   }
 
-  log_err("Asset 0x%08x does not exist", id);
+  log_err_fmt("Asset 0x%0dx does not exist", id);
   return false;
 }
 
 toml::value Filesystem::loadToml(const std::filesystem::path& toml_path) {
-  log_dbg("Loading TOML file", toml_path.c_str());
+  log_dbg_fmt("Loading TOML file: %s", toml_path.c_str());
   return toml::parse(toml_path);
 }
 

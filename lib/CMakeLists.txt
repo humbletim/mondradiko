@@ -19,6 +19,9 @@ else()
   pkg_check_modules(LZ4 REQUIRED liblz4)
 endif()
 
+# Submodule CMake dependencies
+add_subdirectory(CLI11)
+
 find_package(GameNetworkingSockets REQUIRED)
 find_package(Threads REQUIRED)
 
@@ -42,8 +45,8 @@ if (USE_VCPKG)
   target_link_libraries(mondradiko-lib PUBLIC xxHash::xxhash)
 endif()
 
-if(${TRACY_ENABLE})
-  if(${UNIX})
+if(TRACY_ENABLE)
+  if(UNIX)
     target_link_libraries(mondradiko-lib PUBLIC dl)
     target_link_libraries(mondradiko-lib PUBLIC pthread)
   endif()

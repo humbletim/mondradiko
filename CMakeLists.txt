@@ -7,6 +7,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(optional-vcpkg-setup)
 
 project(Mondradiko VERSION 0.0.0)
+set(Mondradiko_COPYRIGHT "Copyright (c) 2020-2021 the Mondradiko contributors.")
+set(Mondradiko_LICENSE "SPDX-License-Identifier: LGPL-3.0-or-later")
 
 option(TRACY_ENABLE "Enable Tracy profiling." OFF)
 

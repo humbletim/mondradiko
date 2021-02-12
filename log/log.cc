@@ -6,9 +6,9 @@
 #include <filesystem>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
-#include <sstream>
 
 namespace mondradiko {
 
@@ -21,15 +21,17 @@ std::string formatPath(const std::filesystem::path& file_path) {
 
 const char* getLogPrefix(LogLevel level) {
   switch (level) {
-    case LOG_LEVEL_ZONE:
+    case LogLevel::Zone:
       return "\x1b[33m[ZNE ";
-    case LOG_LEVEL_INFO:
-      return "\x1b[36m[INF ";
-    case LOG_LEVEL_DEBUG:
+    case LogLevel::Info:
+      return "\x1b[94m[INF ";
+    case LogLevel::Debug:
       return "\x1b[32m[DBG ";
-    case LOG_LEVEL_WARNING:
+    case LogLevel::Message:
+      return "\x1b[96m[MSG ";
+    case LogLevel::Warn:
       return "\x1b[33m[WRN ";
-    case LOG_LEVEL_ERROR:
+    case LogLevel::Error:
       return "\x1b[33m[ERR ";
     default:
       return "\x1b[31m[FTL ";
@@ -44,7 +46,7 @@ void log(const char* file_path, int line, LogLevel level, const char* message) {
   std::cerr << std::left << std::setw(55) << header.str();
   std::cerr << message << "\x1b[0m" << std::endl;
 
-  if (level == LOG_LEVEL_FATAL) {
+  if (level == LogLevel::Fatal) {
     throw std::runtime_error(message);
   }
 }

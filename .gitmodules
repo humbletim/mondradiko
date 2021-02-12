@@ -1,12 +1,19 @@
 [submodule "tracy"]
 	path = lib/tracy
 	url = https://github.com/wolfpld/tracy
+
 [submodule "lib/msdfgen"]
 	path = lib/msdfgen
 	url = https://github.com/Chlumsky/msdfgen
+
 [submodule "lib/gamenetworkingsockets"]
 	path = lib/gamenetworkingsockets
 	url = https://github.com/ValveSoftware/GameNetworkingSockets.git
+
 [submodule "vcpkg"]
 	path = vcpkg
 	url = https://github.com/Microsoft/vcpkg.git
+
+[submodule "lib/CLI11"]
+	path = lib/CLI11
+	url = https://github.com/CLIUtils/CLI11
