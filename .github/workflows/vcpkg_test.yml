@@ -14,7 +14,7 @@ jobs:
           - os: windows-latest
             cc: cl.exe
             cxx: cl.exe
-          - os: ubuntu-16.04
+          - os: ubuntu-latest
             cc: gcc-9
             cxx: g++-9
           - os: ubuntu-16.04
@@ -63,19 +63,23 @@ jobs:
       - name: setup environment vars
         run: |
              echo "Python3_EXECUTABLE=$(which python)" >> $GITHUB_ENV
+             CACHE_KEY=$(echo "${{ matrix.os }}-${{ matrix.cc }}-${{ github.head_ref }}" | tr -cd '[a-zA-Z0-9]._-')
+             echo "CACHE_KEY=$CACHE_KEY" | tee -a $GITHUB_ENV
              mkdir builddir
 
       - name: cache -- vcpkg, builddir/vcpkg_installed
         uses: actions/cache@v2
         with:
           path: |
+            builddir/vcpkg_installed
             vcpkg
             !vcpkg/buildtrees
             !vcpkg/downloads
             !vcpkg/packages
-            builddir/vcpkg_installed
-          key: ${{ matrix.os }}-${{ matrix.cc }}-${{ github.head_ref }}-builddir-vcpkg-manifestmode
-          restore-keys: ${{ matrix.os }}-${{ github.head_ref }}-builddir-vcpkg-manifestmode
+          key: ${{ env.CACHE_KEY }}-builddir-vcpkg-manifestmode
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.cc }}-${{ github.head_ref }}-builddir-vcpkg-manifestmode
+            ${{ matrix.os }}-${{ github.head_ref }}-builddir-vcpkg-manifestmode
           #restore-keys: ${{ github.head_ref }}-builddir-vcpkg
 
       # - name: Setup tmate session
