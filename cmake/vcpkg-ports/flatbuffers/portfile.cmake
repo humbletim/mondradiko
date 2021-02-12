@@ -1,3 +1,5 @@
+message("== preflight check tools folder: ${CURRENT_INSTALLED_DIR}/tools")
+
 vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
 
 vcpkg_from_github(
@@ -28,10 +30,11 @@ vcpkg_configure_cmake(
 
 vcpkg_install_cmake()
 vcpkg_fixup_cmake_targets(CONFIG_PATH lib/cmake/flatbuffers)
+vcpkg_copy_tool_dependencies(${CURRENT_PACKAGES_DIR}/tools/flatbuffers)
 
 file(GLOB flatc_path ${CURRENT_PACKAGES_DIR}/bin/flatc*)
 message("== flatc_path ${flatc_path}")
-#if(flatc_path)
+# #if(flatc_path)
 make_directory(${CURRENT_PACKAGES_DIR}/tools/flatbuffers)
 get_filename_component(flatc_executable ${flatc_path} NAME)
 message("== flatc_executable ${flatc_executable}")
@@ -41,9 +44,9 @@ file(
     ${CURRENT_PACKAGES_DIR}/tools/flatbuffers/${flatc_executable}
 )
 message("== installed as: ${CURRENT_PACKAGES_DIR}/tools/flatbuffers/${flatc_executable}")
-vcpkg_copy_tool_dependencies(${CURRENT_PACKAGES_DIR}/tools/flatbuffers)
-
-#endif()
+# 
+# 
+# #endif()
 
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
@@ -51,5 +54,16 @@ file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bi
 # Handle copyright
 file(INSTALL ${SOURCE_PATH}/LICENSE.txt DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
 
-find_program(FLATC_COMMAND flatc)
-message("== find_program(FLATC_COMMAND flatc): ${FLATC_COMMAND}")
+
+# list(APPEND CMAKE_PROGRAM_PATH ${CURRENT_INSTALLED_DIR}/tools)
+# file(GLOB _VCPKG_TOOLS_DIRS ${CURRENT_INSTALLED_DIR}/tools/*)
+# foreach(_VCPKG_TOOLS_DIR IN LISTS _VCPKG_TOOLS_DIRS)
+#     if(IS_DIRECTORY "${_VCPKG_TOOLS_DIR}")
+#         list(APPEND CMAKE_PROGRAM_PATH "${_VCPKG_TOOLS_DIR}")
+#         message("++ tools folder: ${_VCPKG_TOOLS_DIR}")
+#     endif()
+# endforeach()
+# 
+# find_program(FLATC_COMMAND flatc)
+# 
+# message("== find_program(FLATC_COMMAND flatc): ${FLATC_COMMAND}")

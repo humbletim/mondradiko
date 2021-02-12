@@ -29,12 +29,11 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: 'true'
+      - uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Setup VsDev environment
         if: runner.os == 'Windows'
         uses: seanmiddleditch/gha-setup-vsdevenv@master
-
-      - uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: apt
         if: runner.os == 'Linux'
@@ -52,6 +51,7 @@ jobs:
       - name: Get software versions please
         run: |
           cmake --version
+          ninja --version
           git --version
           python --version
           if [ "$CXX" == "cl.exe" ]; then
