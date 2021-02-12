@@ -1,4 +1,4 @@
-# header-only library
+# header-only library + API registry
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO KhronosGroup/Vulkan-Headers
@@ -12,13 +12,9 @@ vcpkg_configure_cmake(
     PREFER_NINJA
 )
 
+# note: building and installing Vulkan-Headers is necessary to generate the
+#  Vulkan API Registry files (which live in share/vulkan/registry/*)
 vcpkg_install_cmake()
-
-# #file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
-# file(INSTALL ${SOURCE_PATH}/LICENSE.txt DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT}/ RENAME copyright)
-# 
-# # This must be vulkan as other vulkan packages expect it there.
-# file(COPY "${SOURCE_PATH}/include/vulkan/" DESTINATION "${CURRENT_PACKAGES_DIR}/include/vulkan")
 
 # Handle copyright
 file(INSTALL "${SOURCE_PATH}/LICENSE.txt" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)

@@ -1,4 +1,0 @@
-Source: vulkan
-Version: 1.2.162.1
-Description: Placeholder to override broken vcpkg/vulkan package with correct full Vulkan-Headers install
-Build-Depends: vulkan-c-sdk[headers]

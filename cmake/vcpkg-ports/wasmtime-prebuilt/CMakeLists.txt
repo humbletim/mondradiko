@@ -5,8 +5,9 @@ project(wasmtime LANGUAGES CXX)
 include(GNUInstallDirs)
 
 add_library(wasmtime INTERFACE)
-#target_include_directories(wasmtime INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
 target_link_directories(wasmtime INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_LIBDIR}>)
+
 if (WIN32)
   target_link_libraries(wasmtime INTERFACE wasmtime.dll.lib)
 else()

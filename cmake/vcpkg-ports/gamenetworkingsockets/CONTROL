@@ -1,5 +1,5 @@
 Source: gamenetworkingsockets
-Version: 2020-10-06
+Version: v1.2.0
 Description: GameNetworkingSockets is a basic transport layer for games.
 Homepage: https://github.com/ValveSoftware/GameNetworkingSockets
 Build-Depends: protobuf

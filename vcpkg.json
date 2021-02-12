@@ -4,16 +4,19 @@
   "description": "Mondradiko is a future-proof VR engine for creating multiplayer virtual reality experiences.",
   "homepage": "https://github.com/mondradiko/mondradiko",
   "dependencies": [
-    "vulkan-c-sdk",
+    "vulkan-sdk",
     "glslang",
     "flatbuffers",
     "openxr-loader",
-    { "name": "sdl2", "features": [ "vulkan" ] },
+    {
+      "name": "sdl2",
+      "features": [ "vulkan" ]
+    },
     "xxhash",
     "lz4",
     "gamenetworkingsockets",
     "glm",
     "freetype",
-    "wasmtime"
+    "wasmtime-prebuilt"
   ]
 }

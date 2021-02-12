@@ -5,8 +5,6 @@ if (VCPKG_TARGET_IS_WINDOWS)
 		SHA512 0c45fafcc352914dc19958db84149ba3d24cad1252f07d7948d4b649a8090679fae8d8ee58683953f3271e8cc4c0de1483931dbb7f9384d493f159b0dcf2b416
 		FILENAME wasmtime-v0.21.0-x86_64-windows-c-api.zip
 	)
-elseif (VCPKG_TARGET_IS_OSX) 
-  vcpkg_fail_port_install(MESSAGE "only tested on Linux and Windows platforms")
 elseif (VCPKG_TARGET_IS_LINUX)
 	vcpkg_download_distfile(
 		WASMTIME_ARCHIVE
@@ -14,8 +12,8 @@ elseif (VCPKG_TARGET_IS_LINUX)
 		SHA512 35184a47c3c3db89ced2abe5900ae1a840d67f4f90a0ee79c5adcde11b84a47bdf5af78f9a929ce206a6687604d668ad2673f342a69ee11e74d7158a4b544de8
 		FILENAME wasmtime-v0.21.0-x86_64-linux-c-api.tar.gz
 	)
-elseif (ANDROID)
-  vcpkg_fail_port_install(MESSAGE "only tested on Linux and Windows platforms")
+#elseif (VCPKG_TARGET_IS_OSX) 
+#elseif (ANDROID)
 else()
   vcpkg_fail_port_install(MESSAGE "only tested on Linux and Windows platforms")
 endif ()
@@ -53,4 +51,4 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
   file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
 endif()
 
-file(INSTALL ${WASMTIME_EXTRACTED}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/wasmtime/copyright)
+file(INSTALL ${WASMTIME_EXTRACTED}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/wasmtime-prebuilt/copyright)

@@ -1,4 +1,10 @@
-set(SOURCE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../lib/gamenetworkingsockets")
+vcpkg_from_github(
+    OUT_SOURCE_PATH SOURCE_PATH
+    REPO ValveSoftware/GameNetworkingSockets
+    REF v1.2.0
+    HEAD_REF master
+    SHA512 d179fd8f221236beb161723ca133c1f7c574f5d8d9364aaa0de27c64c8661b26b17e3395f42f5245276a05a1399146e56e462d3ec1bb23847955225a99f8d2e3
+)
 
 if(openssl IN_LIST FEATURES)
     set(CRYPTO_BACKEND OpenSSL)
@@ -32,6 +38,5 @@ vcpkg_fixup_cmake_targets(CONFIG_PATH "lib/cmake/GameNetworkingSockets" TARGET_P
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
-
 
 vcpkg_copy_pdbs()
