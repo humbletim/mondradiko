@@ -76,8 +76,9 @@ jobs:
             !vcpkg/buildtrees
             !vcpkg/downloads
             !vcpkg/packages
-          key: ${{ env.CACHE_KEY }}-builddir-vcpkg-manifestmode
+          key: ${{ env.CACHE_KEY }}-builddir-vcpkg-manifestmode-wvalidation
           restore-keys: |
+            ${{ env.CACHE_KEY }}-builddir-vcpkg-manifestmode
             ${{ matrix.os }}-${{ matrix.cc }}-${{ github.head_ref }}-builddir-vcpkg-manifestmode
             ${{ matrix.os }}-${{ github.head_ref }}-builddir-vcpkg-manifestmode
           #restore-keys: ${{ github.head_ref }}-builddir-vcpkg
