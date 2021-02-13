@@ -55,7 +55,7 @@ jobs:
           git --version
           python --version
           if [ "$CXX" == "cl.exe" ]; then
-            $CXX
+              $CXX
           else
               $CXX --version
           fi
