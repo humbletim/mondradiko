@@ -65,6 +65,7 @@ jobs:
              echo "Python3_EXECUTABLE=$(which python)" >> $GITHUB_ENV
              CACHE_KEY=$(echo "${{ matrix.os }}-${{ matrix.cc }}-${{ github.head_ref }}" | tr -cd '[a-zA-Z0-9]._-')
              echo "CACHE_KEY=$CACHE_KEY" | tee -a $GITHUB_ENV
+             echo "ARTIFACT_NAME=`date -u '+%Y%m%d%H%M'`-`echo '${{ matrix.os }}' | sed -e 's/[^A-Za-z0-9]/-/g'`-`echo ${{ github.event.pull_request.head.sha }} | cut -c1-7`" | tee -a $GITHUB_ENV
              mkdir builddir
 
       - name: cache -- vcpkg, builddir/vcpkg_installed
@@ -118,9 +119,30 @@ jobs:
 
       - name: Verify
         run: |
+          echo "-- ⛷️  CLIENT --"
+          [ "${{runner.os}}" == "Linux" ] && ldd builddir/client/mondradiko-client || true
           ls -lrth builddir/client
           ./builddir/client/mondradiko-client --version || true
+
+          echo "-- 🎪  SERVER --"
+          [ "${{runner.os}}" == "Linux" ] && ldd builddir/server/mondradiko-server || true
           ls -lrth builddir/server
           ./builddir/server/mondradiko-server --version || true
+
+          echo "-- 🛄  BUNDLER --"
+          [ "${{runner.os}}" == "Linux" ] && ldd builddir/bundler/mondradiko-bundler || true
           ls -lrth builddir/bundler
           ./builddir/bundler/mondradiko-bundler --version || true
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          retention-days: 1
+          path: |
+            builddir/client
+            builddir/server
+            builddir/bundler
+            !builddir/**/*.cmake
+            !builddir/**/CMakeFiles
+            !builddir/**/*.manifest
