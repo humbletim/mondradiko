@@ -4,6 +4,12 @@
 cmake_minimum_required(VERSION 3.13)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to 'Release' (run cmake with -DCMAKE_BUILD_TYPE=Debug to override).")
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+
 include(optional-vcpkg-setup)
 
 project(Mondradiko VERSION 0.0.0)
@@ -41,7 +47,9 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 add_subdirectory(lib)
 
-add_compile_options(-Wall)
+if (NOT WIN32)
+  add_compile_options(-Wall)
+endif()
 
 add_subdirectory(log)
 add_subdirectory(types)

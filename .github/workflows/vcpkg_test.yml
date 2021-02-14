@@ -91,27 +91,29 @@ jobs:
 
       - name: Configure
         run: |
-          cmake -GNinja -S. -B./builddir -DCMAKE_BUILD_TYPE=Release
+          pushd builddir
+          cmake -GNinja ..
+          popd
 
-      - name: Generate
-        run: |
-          ninja -C builddir \
-            types/assets/MaterialAsset_generated.h \
-            types/assets/MeshAsset_generated.h \
-            types/assets/PrefabAsset_generated.h \
-            types/assets/Registry_generated.h \
-            types/assets/ScriptAsset_generated.h \
-            types/assets/SerializedAsset_generated.h \
-            types/assets/TextureAsset_generated.h \
-            types/assets/types_generated.h \
-            types/protocol/ClientEvent_generated.h \
-            types/protocol/MeshRendererComponent_generated.h \
-            types/protocol/PointLightComponent_generated.h \
-            types/protocol/ScriptData_generated.h \
-            types/protocol/ServerEvent_generated.h \
-            types/protocol/TransformComponent_generated.h \
-            types/protocol/types_generated.h \
-            types/protocol/WorldEvent_generated.h
+      # - name: Generate
+      #   run: |
+      #     ninja -C builddir \
+      #       types/assets/MaterialAsset_generated.h \
+      #       types/assets/MeshAsset_generated.h \
+      #       types/assets/PrefabAsset_generated.h \
+      #       types/assets/Registry_generated.h \
+      #       types/assets/ScriptAsset_generated.h \
+      #       types/assets/SerializedAsset_generated.h \
+      #       types/assets/TextureAsset_generated.h \
+      #       types/assets/types_generated.h \
+      #       types/protocol/ClientEvent_generated.h \
+      #       types/protocol/MeshRendererComponent_generated.h \
+      #       types/protocol/PointLightComponent_generated.h \
+      #       types/protocol/ScriptData_generated.h \
+      #       types/protocol/ServerEvent_generated.h \
+      #       types/protocol/TransformComponent_generated.h \
+      #       types/protocol/types_generated.h \
+      #       types/protocol/WorldEvent_generated.h
 
       - name: Build
         run: |
@@ -135,6 +137,7 @@ jobs:
           ./builddir/bundler/mondradiko-bundler --version || true
 
       - name: Upload Artifact
+        if: false
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.ARTIFACT_NAME }}

@@ -2,7 +2,7 @@ Source: vulkan-sdk
 Version: 1.2.162.1
 Description: The Vulkan SDK provides Vulkan application developers with essential tools to accelerate the development process.
 Homepage: https://vulkan.lunarg.com/sdk/home
-Default-Features: headers, loader, validation
+Default-Features: headers, loader
 
 Feature: headers
 Description: Include Khronos/Vulkan-Headers

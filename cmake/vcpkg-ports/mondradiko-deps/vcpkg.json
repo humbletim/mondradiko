@@ -1,5 +1,5 @@
 {
-  "name": "mondradiko",
+  "name": "mondradiko-deps",
   "version-string": "0.0.0",
   "description": "Mondradiko is a future-proof VR engine for creating multiplayer virtual reality experiences.",
   "homepage": "https://github.com/mondradiko/mondradiko",
@@ -19,5 +19,11 @@
     "msdfgen",
     "freetype",
     "wasmtime-prebuilt"
-  ]
+  ],
+  "features": {
+      "validation": {
+        "description": "mondradiko-deps including vulkan validation",
+        "dependencies": [ "vulkan-validation" ]
+      }
+  }
 }
