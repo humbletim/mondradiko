@@ -44,6 +44,13 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt install libwayland-dev libxrandr-dev
 
+      - name: Setup python
+        if: matrix.os == 'ubuntu-16.04'
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+          architecture: x64
+
       - name: setup environment vars
         run: |
              CACHE_KEY=$(echo "${{ matrix.os }}-${{ matrix.cc }}-${{ github.head_ref }}" | tr -cd '[a-zA-Z0-9]._-')
