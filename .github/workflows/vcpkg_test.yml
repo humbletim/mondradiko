@@ -5,24 +5,29 @@ on: [pull_request]
 defaults:
   run:
     shell: bash
-
 jobs:
   build:
     strategy:
       matrix:
         include:
           - os: windows-latest
+            generator: msbuild
+            cc: cl.exe
+            cxx: cl.exe
+          - os: windows-latest
+            generator: ninja
             cc: cl.exe
             cxx: cl.exe
           - os: ubuntu-20.04
+            generator: ninja
             cc: gcc-10
             cxx: g++-10
           - os: ubuntu-16.04
+            generator: ninja
             cc: clang-9
             cxx: clang++-9
     runs-on: ${{ matrix.os }}
     env:
-      USE_VCPKG: ON
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
     steps:
@@ -39,35 +44,11 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt install libwayland-dev libxrandr-dev
 
-      - name: Setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.6
-          architecture: x64
-
-      - name: toml
-        run: pip3 install toml
-
-      - name: Get software versions please
-        run: |
-          cmake --version
-          ninja --version
-          git --version
-          python --version
-          if [ "$CXX" == "cl.exe" ]; then
-              $CXX
-          else
-              $CXX --version
-          fi
-
       - name: setup environment vars
         run: |
-             echo "Python3_EXECUTABLE=$(which python)" >> $GITHUB_ENV
              CACHE_KEY=$(echo "${{ matrix.os }}-${{ matrix.cc }}-${{ github.head_ref }}" | tr -cd '[a-zA-Z0-9]._-')
              echo "CACHE_KEY=$CACHE_KEY" | tee -a $GITHUB_ENV
-             echo "ARTIFACT_NAME=`date -u '+%Y%m%d%H%M'`-`echo '${{ matrix.os }}' | sed -e 's/[^A-Za-z0-9]/-/g'`-`echo ${{ github.event.pull_request.head.sha }} | cut -c1-7`" | tee -a $GITHUB_ENV
              mkdir builddir
-
       - name: cache -- vcpkg, builddir/vcpkg_installed
         uses: actions/cache@v2
         with:
@@ -82,70 +63,85 @@ jobs:
             ${{ env.CACHE_KEY }}-builddir-vcpkg-manifestmode
             ${{ matrix.os }}-${{ matrix.cc }}-${{ github.head_ref }}-builddir-vcpkg-manifestmode
             ${{ matrix.os }}-${{ github.head_ref }}-builddir-vcpkg-manifestmode
-          #restore-keys: ${{ github.head_ref }}-builddir-vcpkg
 
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
-      #   with:
-      #     limit-access-to-actor: true
+      - name: mkdir builddir
+        run: |
+          test -d builddir || mkdir builddir
 
-      - name: Configure
+      - name: Build with Ninja
+        if: matrix.generator == 'ninja'
         run: |
           pushd builddir
           cmake -GNinja ..
+          ninja
           popd
-
-      # - name: Generate
-      #   run: |
-      #     ninja -C builddir \
-      #       types/assets/MaterialAsset_generated.h \
-      #       types/assets/MeshAsset_generated.h \
-      #       types/assets/PrefabAsset_generated.h \
-      #       types/assets/Registry_generated.h \
-      #       types/assets/ScriptAsset_generated.h \
-      #       types/assets/SerializedAsset_generated.h \
-      #       types/assets/TextureAsset_generated.h \
-      #       types/assets/types_generated.h \
-      #       types/protocol/ClientEvent_generated.h \
-      #       types/protocol/MeshRendererComponent_generated.h \
-      #       types/protocol/PointLightComponent_generated.h \
-      #       types/protocol/ScriptData_generated.h \
-      #       types/protocol/ServerEvent_generated.h \
-      #       types/protocol/TransformComponent_generated.h \
-      #       types/protocol/types_generated.h \
-      #       types/protocol/WorldEvent_generated.h
-
-      - name: Build
+      - name: Build with CMake
+        if: matrix.generator != 'ninja'
         run: |
-          ninja -C builddir
-
+          pushd builddir
+          cmake ..
+          cmake --build . --config release
+          popd
       - name: Verify
         run: |
-          echo "-- ⛷️  CLIENT --"
-          [ "${{runner.os}}" == "Linux" ] && ldd builddir/client/mondradiko-client || true
-          ls -lrth builddir/client
           ./builddir/client/mondradiko-client --version || true
-
-          echo "-- 🎪  SERVER --"
-          [ "${{runner.os}}" == "Linux" ] && ldd builddir/server/mondradiko-server || true
-          ls -lrth builddir/server
           ./builddir/server/mondradiko-server --version || true
-
-          echo "-- 🛄  BUNDLER --"
-          [ "${{runner.os}}" == "Linux" ] && ldd builddir/bundler/mondradiko-bundler || true
-          ls -lrth builddir/bundler
           ./builddir/bundler/mondradiko-bundler --version || true
 
-      - name: Upload Artifact
-        if: false
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          retention-days: 1
-          path: |
-            builddir/client
-            builddir/server
-            builddir/bundler
-            !builddir/**/*.cmake
-            !builddir/**/CMakeFiles
-            !builddir/**/*.manifest
+# jobs:
+#     env:
+#       USE_VCPKG: ON
+#       CC: ${{ matrix.cc }}
+#       CXX: ${{ matrix.cxx }}
+#     steps:
+#       - name: Setup python
+#         uses: actions/setup-python@v2
+#         with:
+#           python-version: 3.6
+#           architecture: x64
+#       - name: Get software versions please
+#         run: |
+#           cmake --version
+#           ninja --version
+#           git --version
+#           python --version
+#           if [ "$CXX" == "cl.exe" ]; then
+#               $CXX
+#           else
+#               $CXX --version
+#           fi
+#       # - name: Setup tmate session
+#       #   uses: mxschmitt/action-tmate@v3
+#       #   with:
+#       #     limit-access-to-actor: true
+#       - name: Verify
+#         run: |
+#           echo "ARTIFACT_NAME=`date -u '+%Y%m%d%H%M'`-`echo '${{ matrix.os }}' | sed -e 's/[^A-Za-z0-9]/-/g'`-`echo ${{ github.event.pull_request.head.sha }} | cut -c1-7`" | tee -a $GITHUB_ENV
+#           echo "-- ⛷️  CLIENT --"
+#           [ "${{runner.os}}" == "Linux" ] && ldd builddir/client/mondradiko-client || true
+#           ls -lrth builddir/client
+#           ./builddir/client/mondradiko-client --version || true
+# 
+#           echo "-- 🎪  SERVER --"
+#           [ "${{runner.os}}" == "Linux" ] && ldd builddir/server/mondradiko-server || true
+#           ls -lrth builddir/server
+#           ./builddir/server/mondradiko-server --version || true
+# 
+#           echo "-- 🛄  BUNDLER --"
+#           [ "${{runner.os}}" == "Linux" ] && ldd builddir/bundler/mondradiko-bundler || true
+#           ls -lrth builddir/bundler
+#           ./builddir/bundler/mondradiko-bundler --version || true
+# 
+#       - name: Upload Artifact
+#         if: false
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: ${{ env.ARTIFACT_NAME }}
+#           retention-days: 1
+#           path: |
+#             builddir/client
+#             builddir/server
+#             builddir/bundler
+#             !builddir/**/*.cmake
+#             !builddir/**/CMakeFiles
+#             !builddir/**/*.manifest

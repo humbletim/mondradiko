@@ -4,7 +4,11 @@
 # NOTE: this file needs to be included _before_ the first project() statement
 #   in order to properly bootstrap the CMAKE_TOOLCHAIN_FILE
 
-option(USE_VCPKG "Enable automated VCPKG support for installing dependencies" $ENV{USE_VCPKG})
+option(USE_VCPKG "Enable automated VCPKG support for installing dependencies" ON)
+
+if (DEFINED ENV{USE_VCPKG})
+  set(USE_VCPKG $ENV{USE_VCPKG})
+endif()
 
 macro(enable_vcpkg_support)
   # enable vcpkg manifest mode
@@ -49,8 +53,9 @@ macro(enable_vcpkg_support)
   else()
     set(VULKAN_VALIDATION_DEP "")
   endif()
-  message(STATUS "running vcpkg --x-install-root=${_VCPKG_INSTALLED_DIR} --overlay-ports=${VCPKG_OVERLAY_PORTS} --overlay-triplets=${CMAKE_OVERLAY_TRIPLETS} --triplet=${VCPKG_DEFAULT_TRIPLET}")
+  message(STATUS "running vcpkg --x-install-root=${_VCPKG_INSTALLED_DIR} --overlay-ports=${VCPKG_OVERLAY_PORTS} --overlay-triplets=${VCPKG_OVERLAY_TRIPLETS} --triplet=${VCPKG_DEFAULT_TRIPLET}")
   execute_process(
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMAND ${VCPKG_EXEC}
       --x-install-root=${_VCPKG_INSTALLED_DIR}
       --overlay-ports=${VCPKG_OVERLAY_PORTS}
