@@ -9,3 +9,6 @@
 [submodule "lib/CLI11"]
 	path = lib/CLI11
 	url = https://github.com/CLIUtils/CLI11
+[submodule "bindings/toml"]
+	path = bindings/toml
+	url = https://github.com/uiri/toml.git
