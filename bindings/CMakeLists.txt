@@ -51,4 +51,5 @@ api_bindings(SCRIPT_LINKERS
 
 add_library(mondradiko-api-components OBJECT ${SCRIPT_LINKERS})
 # TODO(marceline-cramer): Don't expose third-party dependencies to the public interface
+add_dependencies(mondradiko-api-components mondradiko-types)
 target_link_libraries(mondradiko-api-components mondradiko-lib)

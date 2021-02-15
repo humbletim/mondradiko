@@ -97,16 +97,17 @@ jobs:
           cmake -GNinja ..
           ninja
           popd
-      - name: Setup tmate session
-        if: matrix.generator != 'ninja'
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
+      # - name: Setup tmate session
+      #   if: matrix.generator != 'ninja'
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     limit-access-to-actor: true
       - name: Build with CMake
         if: matrix.generator != 'ninja'
         run: |
           pushd builddir
           cmake ..
+          unset TEMP TMP # these break MSBuild for some reason
           cmake --build . --config release
           ./client/Release/mondradiko-client --version || true
           ./server/Release/mondradiko-server --version || true

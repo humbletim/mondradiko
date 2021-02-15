@@ -4,6 +4,5 @@
 find_package(CLI11 CONFIG REQUIRED)
 
 add_executable(mondradiko-server server_main.cc)
-target_link_libraries(mondradiko-server mondradiko-types)
 target_link_libraries(mondradiko-server mondradiko-core)
 target_link_libraries(mondradiko-server CLI11::CLI11)
