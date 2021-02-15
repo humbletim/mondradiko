@@ -12,7 +12,6 @@ set(BUNDLER_SRC
 )
 
 add_executable(mondradiko-bundler ${BUNDLER_SRC})
-add_dependencies(mondradiko-bundler mondradiko-types)
 target_link_libraries(mondradiko-bundler mondradiko-assets)
 target_link_libraries(mondradiko-bundler mondradiko-lib)
 target_link_libraries(mondradiko-bundler CLI11::CLI11)

@@ -10,10 +10,10 @@ jobs:
     strategy:
       matrix:
         include:
-          # - os: windows-latest
-          #   generator: msbuild
-          #   cc: cl.exe
-          #   cxx: cl.exe
+          - os: windows-latest
+            generator: msbuild
+            cc: cl.exe
+            cxx: cl.exe
           - os: windows-latest
             generator: ninja
             cc: cl.exe
@@ -68,8 +68,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.ci_vcpkg_cache_dir }}
-          key: ${{ env.CACHE_KEY }}-vcpkg-binarycache2
-          restore-keys: ${{ env.CACHE_KEY }}-vcpkg-binarycache
+          key: ${{ env.CACHE_KEY }}-vcpkg-binarycache3
+          #restore-keys: ${{ env.CACHE_KEY }}-vcpkg-binarycache2
 
       # - name: cache -- vcpkg, builddir/vcpkg_installed
       #   uses: actions/cache@v2
@@ -103,6 +103,9 @@ jobs:
           pushd builddir
           cmake ..
           cmake --build . --config release
+          ./client/Release/mondradiko-client --version || true
+          ./server/Release/mondradiko-server --version || true
+          ./bundler/Release/mondradiko-bundler --version || true
           popd
       - name: Verify
         run: |

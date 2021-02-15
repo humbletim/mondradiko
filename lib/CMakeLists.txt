@@ -76,11 +76,9 @@ if (NOT USE_VCPKG)
   target_compile_options(mondradiko-lib PUBLIC ${LZ4_CFLAGS_OTHER})
 endif()
 
-target_link_libraries(mondradiko-lib PUBLIC GameNetworkingSockets::GameNetworkingSockets GameNetworkingSockets::GameNetworkingSockets_s)
+target_link_libraries(mondradiko-lib PUBLIC GameNetworkingSockets::GameNetworkingSockets)
 
-target_link_libraries(mondradiko-lib PUBLIC ${Vulkan_LIBRARIES})
-target_include_directories(mondradiko-lib PUBLIC ${Vulkan_INCLUDE_DIRS})
-target_compile_options(mondradiko-lib PUBLIC ${Vulkan_CFLAGS_OTHER})
+target_link_libraries(mondradiko-lib PUBLIC Vulkan::Vulkan)
 
 target_link_libraries(mondradiko-lib PUBLIC msdfgen::msdfgen)
 target_link_libraries(mondradiko-lib PUBLIC msdfgen::msdfgen-ext)
