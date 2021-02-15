@@ -18,7 +18,8 @@
     "glm",
     "msdfgen",
     "freetype",
-    "wasmtime-prebuilt"
+    "wasmtime-prebuilt",
+    "cli11"
   ],
   "features": {
       "validation": {

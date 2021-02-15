@@ -11,6 +11,8 @@ set(BUNDLER_SRC
   Bundler.cc
 )
 
+find_package(CLI11 CONFIG REQUIRED)
+
 add_executable(mondradiko-bundler ${BUNDLER_SRC})
 target_link_libraries(mondradiko-bundler mondradiko-assets)
 target_link_libraries(mondradiko-bundler mondradiko-lib)

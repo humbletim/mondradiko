@@ -20,9 +20,6 @@ else()
   pkg_check_modules(LZ4 REQUIRED liblz4)
 endif()
 
-# Submodule CMake dependencies
-add_subdirectory(CLI11)
-
 find_package(GameNetworkingSockets REQUIRED)
 find_package(Threads REQUIRED)
 
