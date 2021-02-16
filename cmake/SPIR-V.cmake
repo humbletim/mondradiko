@@ -1,9 +1,12 @@
 # Copyright 2019, Collabora, Ltd.
 # SPDX-License-Identifier: BSL-1.0
 
-find_package(glslang CONFIG REQUIRED)
-find_program(GLSLANGVALIDATOR_COMMAND
-	glslangValidator)
+if (USE_VCPKG)
+  include(FindPackageHelper)
+  find_package_system_first(mondradiko::glslang VCPKG glslang VCPKG_MODULES glslang)
+endif()
+
+find_program(GLSLANGVALIDATOR_COMMAND glslangValidator HINTS ${CMAKE_BINARY_DIR}/vcpkg_installed/x64-linux/tools ${CMAKE_BINARY_DIR}/vcpkg_installed/x64-windows/tools)
 if(NOT GLSLANGVALIDATOR_COMMAND)
 	message(FATAL_ERROR "glslangValidator required - source maintained at https://github.com/KhronosGroup/glslang")
 endif()

@@ -10,22 +10,27 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: windows-latest
-            generator: msbuild
-            cc: cl.exe
-            cxx: cl.exe
-          - os: windows-latest
-            generator: ninja
-            cc: cl.exe
-            cxx: cl.exe
+          # - os: windows-latest
+          #   generator: msbuild
+          #   cc: cl.exe
+          #   cxx: cl.exe
+          # - os: windows-latest
+          #   generator: ninja
+          #   cc: cl.exe
+          #   cxx: cl.exe
+          # - os: ubuntu-20.04
+          #   generator: ninja
+          #   cc: gcc-10
+          #   cxx: g++-10
           - os: ubuntu-20.04
             generator: ninja
-            cc: gcc-10
-            cxx: g++-10
-          - os: ubuntu-16.04
-            generator: ninja
-            cc: clang-9
-            cxx: clang++-9
+            cc: clang-10
+            cxx: clang++-10
+            vcpkg: manual
+          # - os: ubuntu-16.04
+          #   generator: ninja
+          #   cc: clang-9
+          #   cxx: clang++-9
     runs-on: ${{ matrix.os }}
     env:
       CC: ${{ matrix.cc }}
@@ -90,6 +95,27 @@ jobs:
         run: |
           test -d builddir || mkdir builddir
 
+      - name: manually install vcpkg dependencies
+        if: matrix.vcpkg == 'manual'
+        run: |
+           echo "USE_VCPKG=OFF" >> $GITHUB_ENV
+           git clone --branch v1.8 --single-branch https://github.com/Chlumsky/msdfgen.git lib/msdfgen
+           sudo apt install libglm-dev libsdl2-dev liblz4-dev libvulkan-dev \
+                 build-essential glslang-tools \
+                 libzstd-dev libfreetype6-dev \
+                 libprotobuf-dev protobuf-compiler libssl-dev \
+                 libgl1-mesa-dev libx11-xcb-dev libxcb-dri2-0-dev \
+                 libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev \
+                 libxcb-randr0-dev libxrandr-dev libxxf86vm-dev \
+                 mesa-common-dev
+           ./vcpkg/bootstrap-vcpkg.sh
+           ./vcpkg/vcpkg \
+                --x-install-root=$PWD/builddir/vcpkg_installed \
+                --overlay-ports=$PWD/cmake/vcpkg-ports \
+                --overlay-triplets=$PWD/cmake/vcpkg-triplets \
+                --triplet=x64-linux \
+                install xxhash openxr-loader cli11 wasmtime-prebuilt flatbuffers gamenetworkingsockets
+
       - name: Build with Ninja
         if: matrix.generator == 'ninja'
         run: |
@@ -114,6 +140,7 @@ jobs:
           ./bundler/Release/mondradiko-bundler --version || true
           popd
       - name: Verify
+        if: matrix.generator == 'ninja'
         run: |
           ./builddir/client/mondradiko-client --version || true
           ./builddir/server/mondradiko-server --version || true
