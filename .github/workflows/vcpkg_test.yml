@@ -10,27 +10,27 @@ jobs:
     strategy:
       matrix:
         include:
-          # - os: windows-latest
-          #   generator: msbuild
-          #   cc: cl.exe
-          #   cxx: cl.exe
-          # - os: windows-latest
-          #   generator: ninja
-          #   cc: cl.exe
-          #   cxx: cl.exe
-          # - os: ubuntu-20.04
-          #   generator: ninja
-          #   cc: gcc-10
-          #   cxx: g++-10
+          - os: windows-latest
+            generator: msbuild
+            cc: cl.exe
+            cxx: cl.exe
+          - os: windows-latest
+            generator: ninja
+            cc: cl.exe
+            cxx: cl.exe
+          - os: ubuntu-20.04
+            generator: ninja
+            cc: gcc-10
+            cxx: g++-10
           - os: ubuntu-20.04
             generator: ninja
             cc: clang-10
             cxx: clang++-10
             vcpkg: manual
-          # - os: ubuntu-16.04
-          #   generator: ninja
-          #   cc: clang-9
-          #   cxx: clang++-9
+          - os: ubuntu-16.04
+            generator: ninja
+            cc: clang-9
+            cxx: clang++-9
     runs-on: ${{ matrix.os }}
     env:
       CC: ${{ matrix.cc }}
