@@ -1,7 +1,7 @@
 {
   "name": "mondradiko-deps",
   "version-string": "0.0.0",
-  "description": "Mondradiko is a future-proof VR engine for creating multiplayer virtual reality experiences.",
+  "description": "portfile for managing Mondradiko VCPKG dependencies as a set",
   "homepage": "https://github.com/mondradiko/mondradiko",
   "dependencies": [
     "vulkan-sdk",

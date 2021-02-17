@@ -1,10 +1,11 @@
 # automatically enable VCPKG if ENV{USE_VCPKG} or -DUSE_VCPKG=ON is specified
-# actual vcpkg dependencies are managed through vcpkg.json in the project root
+# vcpkg deps are managed through cmake/vcpkg-ports/mondradiko-deps/vcpkg.json
 
 # NOTE: this file needs to be included _before_ the first project() statement
-#   in order to properly bootstrap the CMAKE_TOOLCHAIN_FILE
+#       in order to properly bootstrap the CMAKE_TOOLCHAIN_FILE
 
-option(USE_VCPKG "Enable automated VCPKG support for installing dependencies" ON)
+option(USE_VCPKG "Enable automated VCPKG dependencies" ON)
+option(BUILD_VULKAN_VALIDATION "Enable Vulkan validation layers via VCPKG" OFF)
 
 if (DEFINED ENV{USE_VCPKG})
   set(USE_VCPKG $ENV{USE_VCPKG})

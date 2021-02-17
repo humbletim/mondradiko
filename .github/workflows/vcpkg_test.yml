@@ -73,8 +73,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.ci_vcpkg_cache_dir }}
-          key: ${{ env.CACHE_KEY }}-vcpkg-binarycache3
-          #restore-keys: ${{ env.CACHE_KEY }}-vcpkg-binarycache2
+          key: ${{ env.CACHE_KEY }}-vcpkg-binarycache4
+          restore-keys: ${{ env.CACHE_KEY }}-vcpkg-binarycache3
 
       # - name: cache -- vcpkg, builddir/vcpkg_installed
       #   uses: actions/cache@v2
