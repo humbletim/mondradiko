@@ -80,12 +80,7 @@ find_mondradiko_dependency(
 find_package(Vulkan REQUIRED)
 add_library(mondradiko::vulkan ALIAS Vulkan::Vulkan)
 
-if (USE_VCPKG)
-  find_package(Flatbuffers CONFIG REQUIRED)
-endif()
-
 find_package(Threads REQUIRED)
-
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 

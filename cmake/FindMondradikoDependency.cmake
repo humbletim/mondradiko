@@ -99,3 +99,22 @@ function(find_package_pkgconfig _opts_ALIAS _opts_PKG)
     endif()
   endif()
 endfunction()
+
+# VCPKG_APPLOCAL_DEPS works fine to ensure runtime DLLs get copied for Release
+# builds, but not in the case of compiling the project in Debug mode while
+# still linking against VCPKG Release dependencies.
+#
+# This custom command replicates the same effect so Visual Studio users
+# can build an application .exe in Debug mode and simply hit F5 to start
+# debugging it (without first having to manually shuffle DLLs around).
+
+function(mondradiko_instrument_exe_runtime_dlls TARGET_NAME)
+  if (USE_VCPKG AND WIN32)
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+      COMMAND powershell -noprofile -executionpolicy Bypass -file "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/msbuild/applocal.ps1"
+          -targetBinary $<TARGET_FILE:${TARGET_NAME}>
+          -installedDir "${CMAKE_BINARY_DIR}/vcpkg_installed/x64-windows/bin"
+          -OutVariable out
+    )
+  endif()
+endfunction()
